@@ -199,39 +199,39 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog $tsm
                 #Activate Tableau Server license
                 Write-ToLog -text  "Registering Tableau Server License"
-                Start-Process $tsm -ArgumentList " licenses activate -k '$LicenseKey'" -Verb RunAs -Wait
+                Start-Process $tsm -ArgumentList " licenses activate -k $LicenseKey" -Wait
                 #Invoke-Expression "tsm licenses activate -k '$LicenseKey'"
                 Write-ToLog -text "Completed Tableau Server license activation"
                 
                 #Register Tableau Server
                 $reg_file = $($folder+$reg_file)
                 Write-ToLog -text "Starting Tableau Server registration"
-                Start-Process $tsm -ArgumentList " register --file '$reg_file'" -Verb RunAs -Wait
+                Start-Process $tsm -ArgumentList " register --file $reg_file" -Wait
                 #Invoke-Expression "tsm register --file '$reg_file'"
                 Write-ToLog -text "Completed Tableau Server registration"
 
                 #Set local repository
                 $iDP_file = $($folder+$iDP_config)
                 Write-ToLog -text "Starting Tableau Server local Repository setup"
-                Start-Process $tsm -ArgumentList " settings import -f '$iDP_file'" -Verb RunAs -Wait
+                Start-Process $tsm -ArgumentList " settings import -f $iDP_file" -Wait
                 #Invoke-Expression "tsm settings import -f '$iDP_file'"
                 Write-ToLog -text "Completed Tableau Server local Repository setup"
 
                 #Apply pending changes
                 Write-ToLog -text "Applying pending TSM changes"
-                Start-Process $tsm -ArgumentList " pending-changes apply"-Verb RunAs -Wait
+                Start-Process $tsm -ArgumentList " pending-changes apply" -Wait
                 #Invoke-Expression "tsm pending-changes apply"
                 Write-ToLog -text "TSM changes applied successfully."
 
                 #Initialize configuration
                 Write-ToLog -text "Initializing Tableau Server"
-                Start-Process $tsm -ArgumentList " initialize" -Verb RunAs -Wait
+                Start-Process $tsm -ArgumentList " initialize" -Wait
                 #Invoke-Expression "tsm initialize"
                 Write-ToLog -text "Tableau Server initialized"
 
                 #Initialize configuration
                 Write-ToLog -text "Starting Tableau Server"
-                Start-Process $tsm -ArgumentList " start" -Verb RunAs -Wait
+                Start-Process $tsm -ArgumentList " start"  -Wait
                 #Invoke-Expression "tsm start"
                 Write-ToLog -text "Tableau Server started"
             }
