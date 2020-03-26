@@ -101,7 +101,7 @@ function func_Download($github_url, $folder, $reg_file, $iDP_config, $log_file, 
             
             Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
             Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
-            #Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
+            Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
         }
         
 
@@ -193,9 +193,9 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                                 
             try{
                     
-
                 #Activate Tableau Server license
                 Write-ToLog -text  "Registering Tableau Server License"
+                #Start-Process tsm -ArgumentList "licenses activate -k '$LicenseKey'"
                 Invoke-Expression "tsm licenses activate -k '$LicenseKey'"
                 Write-ToLog -text "Completed Tableau Server license activation"
                 
