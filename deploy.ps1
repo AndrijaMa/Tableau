@@ -238,7 +238,7 @@ function func_main(){
     #Install Tableau server
     func_Install -log_path $($folder+$log_file) -file_path $($folder+$global:DownloadFile)
     #Configure tableau server
-    #func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -LicenseKey $LicenseKey
+    func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -LicenseKey $LicenseKey
 }
 
 func_main
