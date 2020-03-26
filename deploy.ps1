@@ -52,7 +52,7 @@ function func_Version ($version) {
         #return $global:major, $global:minor, $global:hotfix
 }
 
-$github_url = "https://raw.githubusercontent.com/AndrijaMa/Test/master/"
+$github_url = "https://raw.githubusercontent.com/AndrijaMa/TestX/master/"
 $folder = "C:\Downloads\"
 $reg_file = "reginfo.json"
 $iDP_config = "iDP_config.json"
@@ -155,6 +155,23 @@ function func_Install($file_path, $log_path)
                     Write-ToLog -text  'Tableau server is already installed'
                 }
 
+                #Identifying path to TSM
+                #Get-ItemProperty -Path HKLM:\SOFTWARE\Tableau $version_full*
+                Write-ToLog -text "Adding TSM to local Windows system PATH"
+    
+                #Check if Tableau is installed on the Server
+                if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $true)
+                {
+                    #Get the AppVersion Property from the registry that contains the path to the 
+                    $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"Packages")
+                    $bin = (Get-ItemProperty ($packages+"\bin.*") | Select-Object Name).Name
+                    $tsm_path = $packages+"\"+$bin+"\";
+                    #Add TSM to Windows Path
+
+                    $Env:path += $tsm_path
+
+                }
+
                 #Generate bootstrap file
                 if($Bootstrap -eq $true)
                 {
@@ -175,22 +192,7 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 {
                                 
             try{
-                    #Identifying path to TSM
-                    #Get-ItemProperty -Path HKLM:\SOFTWARE\Tableau $version_full*
-                    Write-ToLog -text "Adding TSM to local Windows system PATH"
-        
-                    #Check if Tableau is installed on the Server
-                    if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $true)
-                    {
-                        #Get the AppVersion Property from the registry that contains the path to the 
-                        $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"Packages")
-                        $bin = (Get-ItemProperty ($packages+"\bin.*") | Select-Object Name).Name
-                        $tsm_path = $packages+"\"+$bin+"\";
-                        #Add TSM to Windows Path
-
-                        $Env:path += $tsm_path
-
-                    }
+                    
 
                 #Activate Tableau Server license
                 Write-ToLog -text  "Registering Tableau Server License"
