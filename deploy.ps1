@@ -165,10 +165,11 @@ function func_Install($file_path, $log_path)
                     #Get the AppVersion Property from the registry that contains the path to the 
                     $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"Packages")
                     $bin = (Get-ItemProperty ($packages+"\bin.*") | Select-Object Name).Name
-                    $tsm_path = $packages+"\"+$bin+"\";
+                    $global:tsm_path = $packages+"\"+$bin+"\";
                     #Add TSM to Windows Path
 
-                    $Env:path += $tsm_path
+                    $Env:path += $global:tsm_path
+
 
                 }
 
@@ -192,38 +193,45 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 {
                                 
             try{
-                    
+                
+                $tsm = $global:tsm_path +"tsm.com"
+                Write-ToLog $tsm
                 #Activate Tableau Server license
                 Write-ToLog -text  "Registering Tableau Server License"
-                Start-Process tsm -ArgumentList "licenses activate -k '$LicenseKey'"
+                Start-Process $tsm -ArgumentList " licenses activate -k '$LicenseKey'" -Verb RunAs -Wait
                 #Invoke-Expression "tsm licenses activate -k '$LicenseKey'"
                 Write-ToLog -text "Completed Tableau Server license activation"
                 
                 #Register Tableau Server
                 $reg_file = $($folder+$reg_file)
                 Write-ToLog -text "Starting Tableau Server registration"
-                Invoke-Expression "tsm register --file '$reg_file'"
+                Start-Process $tsm -ArgumentList " register --file '$reg_file'" -Verb RunAs -Wait
+                #Invoke-Expression "tsm register --file '$reg_file'"
                 Write-ToLog -text "Completed Tableau Server registration"
 
                 #Set local repository
                 $iDP_file = $($folder+$iDP_config)
                 Write-ToLog -text "Starting Tableau Server local Repository setup"
-                Invoke-Expression "tsm settings import -f '$iDP_file'"
+                Start-Process $tsm -ArgumentList " settings import -f '$iDP_file'" -Verb RunAs -Wait
+                #Invoke-Expression "tsm settings import -f '$iDP_file'"
                 Write-ToLog -text "Completed Tableau Server local Repository setup"
 
                 #Apply pending changes
                 Write-ToLog -text "Applying pending TSM changes"
-                Invoke-Expression "tsm pending-changes apply"
+                Start-Process $tsm -ArgumentList " pending-changes apply"-Verb RunAs -Wait
+                #Invoke-Expression "tsm pending-changes apply"
                 Write-ToLog -text "TSM changes applied successfully."
 
                 #Initialize configuration
                 Write-ToLog -text "Initializing Tableau Server"
-                Invoke-Expression "tsm initialize"
+                Start-Process $tsm -ArgumentList " initialize" -Verb RunAs -Wait
+                #Invoke-Expression "tsm initialize"
                 Write-ToLog -text "Tableau Server initialized"
 
                 #Initialize configuration
                 Write-ToLog -text "Starting Tableau Server"
-                Invoke-Expression "tsm start"
+                Start-Process $tsm -ArgumentList " start" -Verb RunAs -Wait
+                #Invoke-Expression "tsm start"
                 Write-ToLog -text "Tableau Server started"
             }
             catch
