@@ -101,7 +101,7 @@ function func_Download($github_url, $folder, $reg_file, $iDP_config, $log_file, 
             
             Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
             Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
-            Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
+            #Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
         }
         
 
