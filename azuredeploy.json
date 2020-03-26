@@ -207,7 +207,7 @@
                 }
             ]
         },
-		"tableau":{
+		"Tableau":{
 			"fileUris": "https://raw.githubusercontent.com/AndrijaMa/TestX/master/deploy.ps1",
 			"fileName": "deploy.ps1",
 			"arguments": "[concat('-version', ' ', parameters('TableauServer'), ' ', '-LicenseKey', ' ', parameters('LicenseKey'))]"
@@ -280,10 +280,10 @@
                         "typeHandlerVersion": "1.7",
                         "autoUpgradeMinorVersion": true,
                         "settings": {
-                                        "fileUris": "[split(variables('tableau').fileUris, ' ')]"
+                                        "fileUris": "[split(variables('Tableau').fileUris, ' ')]"
                         },
                         "protectedSettings":{
-                                                "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ', variables('tableau').fileName, ' ', '-version', ' ', parameters('TableauServer'), ' ', '-LicenseKey', ' ', parameters('LicenseKey'))]"
+                                                "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ', variables('Tableau').fileName, ' ', '-version', ' ', parameters('TableauServer'), ' ', '-LicenseKey', ' ', parameters('LicenseKey'))]"
                         }
                     },
                     "dependsOn": [
