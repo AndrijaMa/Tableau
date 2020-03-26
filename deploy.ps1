@@ -186,8 +186,9 @@ function func_Install($file_path, $log_path)
             }
 }
 
-function func_License(){
-
+function func_AntiVirus(){
+        #Disable antivirus scan for the folder that is being used during the installation
+        Add-MpPreference -ExclusionPath $folder
 }
 function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file, $LicenseKey)
 {
@@ -241,7 +242,9 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 }
 
 function func_main(){
-    
+    #Exclude folders from realtime scanning
+    func_AntiVirus
+    #Set paramaters for the Tableau Server version
     func_Version -Version $Version
     #Download Tableau sewrver installation files
     func_Download -github_url $github_url -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
