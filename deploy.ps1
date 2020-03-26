@@ -195,7 +195,7 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                                 
             try{
                 
-                $tsm = $global:tsm_path +"tsm.com"
+                $tsm = $global:tsm_path +"tsm.cmd"
                 Write-ToLog $tsm
                 #Activate Tableau Server license
                 Write-ToLog -text  "Registering Tableau Server License"
