@@ -82,7 +82,7 @@ function func_Download($github_url, $folder, $reg_file, $iDP_config, $log_file, 
 
         if(Test-Path $folder)
         {
-            Write-ToLog -text  'The ' $folder 'folder already exists'
+            Write-ToLog -text  "'The ' $folder 'folder already exists'"
         }
         else
             {
@@ -147,7 +147,14 @@ function func_Install($file_path, $log_path)
                 if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $false)
                 {
                     Write-ToLog -text  "Starting Tableau Server installation"
-                    Start-Process -FilePath $file_path -ArgumentList "/install /silent /ACCEPTEULA = 1 /LOG '$log_path'" -Verb RunAs -Wait
+                    if($global:major -le 2019 -and $global:minor -lt 4 -or $global:major -le 2018 ){
+                        Start-Process -FilePath $file_path -ArgumentList " /install /silent /ACCEPTEULA = 1 /LOG '$log_path'" -Verb RunAs -Wait
+                    }
+                    elseif ($global:major -ge 2019 -and $global:minor -eq 4 -or $global:major -ge 2020) {
+                        Start-Process -FilePath $file_path -ArgumentList " /install /passive ACCEPTEULA=1" -Verb RunAs -Wait
+                    }
+
+                    
                     Write-ToLog -text  "Tableau Server installation completed successfully"
                 }
                 else
@@ -256,3 +263,4 @@ function func_main(){
 
 func_main
 
+ 
