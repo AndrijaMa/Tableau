@@ -91,7 +91,7 @@ function func_Download($github_url, $folder, $reg_file, $iDP_config, $log_file, 
             }
         Write-ToLog -text $url
         #Download the server installation file
-        if(Test-Path $($folder+$DownloadFile))
+        if(Test-Path $($folder+$global:DownloadFile))
         {
             Write-ToLog -text "Downloading Tableau Server installation media download..." 
             Write-ToLog -text  $($folder+$DownloadFile) ' exists'
