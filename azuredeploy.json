@@ -10,7 +10,7 @@
             }
         },
         "adminPassword": {
-            "defaultValue": "Okkfr23456789",
+            "defaultValue": "",
             "type": "SecureString",
             "metadata": {
                 "description": "Password for the Virtual Machine."
@@ -24,7 +24,7 @@
             }
         },
         "TSMPassword": {
-            "defaultValue": "Okkfr23456789",
+            "defaultValue": "",
             "type": "SecureString",
             "metadata": {
                 "description": "Password for the TSM user."

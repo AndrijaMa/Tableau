@@ -170,7 +170,16 @@ function func_Install($file_path, $log_path)
                 if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $true)
                 {
                     #Get the AppVersion Property from the registry that contains the path to the 
-                    $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"Packages")
+                    if ( (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application -eq '\$')
+                    {
+                        $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"Packages")
+                    }
+                    else
+                    {
+                        $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"\Packages")
+                    }
+                    
+                    
                     $bin = (Get-ItemProperty ($packages+"\bin.*") | Select-Object Name).Name
                     $global:tsm_path = $packages+"\"+$bin+"\";
                     #Add TSM to Windows Path
@@ -262,5 +271,3 @@ function func_main(){
 }
 
 func_main
-
- 
