@@ -361,8 +361,12 @@
                     {
                         "name": "[parameters('subnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnetPrefix')]"
-                        }
+                            "addressPrefix": "[parameters('subnetPrefix')]",
+                            "networkSecurityGroup":{
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSettings').nsgVNetName)]"
+
+                            }
+                       }
                     }
                 ]
             }
