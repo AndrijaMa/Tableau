@@ -111,7 +111,7 @@ function func_Download($github_url, $folder, $reg_file, $iDP_config, $log_file, 
             Write-ToLog -text "Downloading Tableau Server installation media download..." 
             Write-ToLog -text  $($folder+$DownloadFile) ' exists'
         }
-        else 
+        else
         {
             
             Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
@@ -230,14 +230,18 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog $tsm
                 #Activate Tableau Server license
                 Write-ToLog -text  "Registering Tableau Server License"
+                
                 if($LicenseKey.ToLower() -eq 'trial'){
+                    
                     Start-Process $tsm -ArgumentList " licenses activate -t" -Wait
                     Write-ToLog -text "Completed Tableau Server trial license activation"
                 }
-                else{
+                elseif($LicenseKey -match '^[0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}$'){
+                    
                     Start-Process $tsm -ArgumentList " licenses activate -k $LicenseKey" -Wait
                     Write-ToLog -text "Completed Tableau Server license activation"
                 }
+               
                 
                 #Register Tableau Server
                 $reg_file = $($folder+$reg_file)
