@@ -230,9 +230,14 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog $tsm
                 #Activate Tableau Server license
                 Write-ToLog -text  "Registering Tableau Server License"
-                Start-Process $tsm -ArgumentList " licenses activate -k $LicenseKey" -Wait
-                #Invoke-Expression "tsm licenses activate -k '$LicenseKey'"
-                Write-ToLog -text "Completed Tableau Server license activation"
+                if($LicenseKey.ToLower() -eq 'trial'){
+                    Start-Process $tsm -ArgumentList " licenses activate -t" -Wait
+                    Write-ToLog -text "Completed Tableau Server trial license activation"
+                }
+                else{
+                    Start-Process $tsm -ArgumentList " licenses activate -k $LicenseKey" -Wait
+                    Write-ToLog -text "Completed Tableau Server license activation"
+                }
                 
                 #Register Tableau Server
                 $reg_file = $($folder+$reg_file)
