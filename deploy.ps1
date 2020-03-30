@@ -219,11 +219,20 @@ function func_Install($file_path, $log_path)
 
 function func_AntiVirus(){
         #Disable antivirus scan for the folder that is being used during the installation
+        Write-ToLog -text "Adding C:\Downloads to AV Exlusion"
         Add-MpPreference -ExclusionPath $folder
 
         if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $true){
             $ts_install = (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application
+            Write-ToLog -text $ts_install
+
+            $ts_data =  (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Data).Data   
+            Write-ToLog -text $ts_data 
+            
             Add-MpPreference -ExclusionPath $ts_install 
+            Write-ToLog -text "Added Tableau server install folder to AntiVirus Exlusions"
+            Add-MpPreference -ExclusionPath $ts_data 
+            Write-ToLog -text "Added Tableau server data folder to AntiVirus Exlusions"
         }
         }   
 function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file, $LicenseKey)
