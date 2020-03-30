@@ -1,5 +1,20 @@
 param   (
-    [Parameter(Mandatory=$false,HelpMessage="Please enter the License key or type Trial to activeate a 14 day trial")] [String]$LicenseKey,
+    [Parameter(Mandatory=$true)]
+    [ValidateScript(
+        {
+            If ($_ -match '^[0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}$'){
+                $True
+            } 
+            elseif($_.ToLower() -eq 'trial') {
+                $True
+            }
+            Else 
+            {
+                Throw 'Aborting installation due to invalid license key'
+            }
+        }
+        )
+    ]$LicenseKey,
     [Parameter(Mandatory=$false)] [String]$Bootstrap=$false,
     [Parameter(Mandatory=$false)] [String]$Help,
     [Parameter(Mandatory=$true,HelpMessage="Please enter the version of Tableau Server that you want to download (Example:2019.3.4")] 
