@@ -218,8 +218,10 @@ function func_Install($file_path, $log_path)
 }
 
 function func_AntiVirus(){
+        $ts_install = (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application
         #Disable antivirus scan for the folder that is being used during the installation
         Add-MpPreference -ExclusionPath $folder
+        Add-MpPreference -ExclusionPath $ts_install 
 }
 function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file, $LicenseKey)
 {
@@ -230,7 +232,7 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog $tsm
                 #Activate Tableau Server license
                 Write-ToLog -text  "Registering Tableau Server License"
-                
+
                 if($LicenseKey.ToLower() -eq 'trial'){
                     
                     Start-Process $tsm -ArgumentList " licenses activate -t" -Wait
