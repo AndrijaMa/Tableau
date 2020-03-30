@@ -139,7 +139,7 @@
             ],
             "type": "String",
             "metadata": {
-                "description": "Select type of storage."
+                "description": "Select type of storage and make sure that the machinetype and the region that you selected support premium disk."
             }
         },
         "BootDiagnostic": {
@@ -194,7 +194,7 @@
             "defaultValue": "",
             "type": "String",
             "metadata": {
-                "description": "Tableau Server License key."
+                "description": "Enter your Tableau Server License key (type trial if you want to actibate a 14 day trial)"
             }
         }
     },
@@ -263,7 +263,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "disk01",
+                        "name": "[concat('LUN-',toUpper(parameters('vmName')), '-DISK0')]",
                         "caching": "ReadWrite",
                         "osType": "Windows",
                         "createOption": "FromImage",
