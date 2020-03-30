@@ -218,11 +218,14 @@ function func_Install($file_path, $log_path)
 }
 
 function func_AntiVirus(){
-        $ts_install = (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application
         #Disable antivirus scan for the folder that is being used during the installation
         Add-MpPreference -ExclusionPath $folder
-        Add-MpPreference -ExclusionPath $ts_install 
-}
+
+        if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $true){
+            $ts_install = (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application
+            Add-MpPreference -ExclusionPath $ts_install 
+        }
+        }   
 function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file, $LicenseKey)
 {
                                 
@@ -294,6 +297,7 @@ function func_main(){
     func_Install -log_path $($folder+$log_file) -file_path $($folder+$global:DownloadFile)
     #Configure tableau server
     func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -LicenseKey $LicenseKey
+    func_AntiVirus
 }
 
 func_main
