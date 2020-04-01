@@ -69,16 +69,16 @@ else {
     $az_users = $($az_response.value | Select-Object @{N='displayName';E={$_.displayName}}, @{N='userPrincipalName';E={$_.userPrincipalName.split('#')[0].split('@')[0]}}).userPrincipalName.toLower()  
 }
 
-
 $delta = Compare-Object $ts_users $az_users | Where-Object{$_.SideIndicator -eq '=>'}
 
 #Loop over all users and add the AD users that are missing in Tableau that contain the filter value if a filter is in use 
 ForEach ($user in $delta.InputObject)
 {
         try{
+                $user = $user.substring(0,1).toupper()+$user.substring(1).tolower() 
                 $ts_user_body = "<tsRequest>`n	<user name=`"$user`" siteRole=`"$SiteRole`">`n		`n	</user>`n</tsRequest>"
                 $response = Invoke-RestMethod $ts_site_url -Method 'POST' -Headers $ts_user_headers -Body $ts_user_body
-                Write-Host "Added "$user" to Tableau server as site role " $siteRole
+                Write-Host "Added "$user" to Tableau site " $ts_url " as role " $siteRole.
         }
         catch{
                 $PSItem.Exception.Message
