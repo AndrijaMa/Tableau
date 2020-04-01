@@ -61,7 +61,14 @@ $headers.Add("Authorization", "Bearer "+ $az_token_response.access_token )
 $az_response = Invoke-RestMethod $ms_graph_url'v1.0/users' -Method 'GET' -Headers $headers
 
 #| Select-Object displayName, userPrincipalName
-$az_users = $($az_response.value | Where-Object{$_.jobTitle -eq 'Tableau'} | Select-Object @{N='displayName';E={$_.displayName}}, @{N='userPrincipalName';E={$_.userPrincipalName.split('#')[0].split('@')[0]}}).userPrincipalName.toLower()  
+if($filterValue -ne '' -or $filterValue -notcontains '*')
+{
+    $az_users = $($az_response.value | Where-Object{$_.jobTitle -eq 'Tableau'} | Select-Object @{N='displayName';E={$_.displayName}}, @{N='userPrincipalName';E={$_.userPrincipalName.split('#')[0].split('@')[0]}}).userPrincipalName.toLower()  
+}
+else {
+    $az_users = $($az_response.value | Select-Object @{N='displayName';E={$_.displayName}}, @{N='userPrincipalName';E={$_.userPrincipalName.split('#')[0].split('@')[0]}}).userPrincipalName.toLower()  
+}
+
 
 $delta = Compare-Object $ts_users $az_users | Where-Object{$_.SideIndicator -eq '=>'}
 
