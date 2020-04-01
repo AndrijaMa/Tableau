@@ -5,9 +5,10 @@ $tenant_Id = ""
 $client_secret = ""
 #Enter azure AD client ID
 $client_id = ""
-
-$auth_url = 'https://login.microsoftonline.com/'+$tenant_Id+'/oauth2/v2.0/token'
-$scope = 'https://graph.microsoft.com/.default'
+$ms_online_url = 'https://login.microsoftonline.com/'
+$auth_url = $ms_online_url+$tenant_Id+'/oauth2/v2.0/token'
+$ms_graph_url = 'https://graph.microsoft.com/'
+$scope = $ms_graph_url+'.default'
 
 #Enter the server base url
 $ts_url = ''
@@ -17,19 +18,13 @@ $ts_api_ver = '3.4'
 $ts_user = ''
 $ts_password = ''
 #Enter Filter Property
-$filterProperty = 'jobTitle'
+$filterProperty = ''
 #Enter Filter Value
-$filterValue = 'Tableau'
+$filterValue = ''
 #Enter default site role
-$siteRole = 'Viewer'
-$ts_auth_url = $ts_url+'/api/'+$ts_api_ver+'/auth/signin'
+$siteRole = 'Unlicensed'
 
-#Get Azure Access Token
-$az_headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-$az_headers.Add("Content-Type", "application/x-www-form-urlencoded")
-#$headers.Add("SdkVersion", "postman-graph/v1.0")
-$az_body = "grant_type=client_credentials&client_id="+$client_id+"&client_secret="+$client_secret+"&scope="+$scope
-$az_token_response = Invoke-RestMethod $auth_url -Method 'POST' -Headers $az_headers -Body $az_body
+$ts_auth_url = $ts_url+'/api/'+$ts_api_ver+'/auth/signin'
 
 #Get Tableau Acess Token
 $ts_headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
@@ -42,33 +37,45 @@ $ts_token_response = $ts_token_response.tsResponse
 
 $ts_token = $ts_token_response.credentials.token
 $ts_site = $ts_token_response.credentials.site.id
+$ts_site_url = $ts_url+"/api/"+$ts_api_ver+"/sites/"+$ts_site+"/users"
 
 $ts_user_headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
 $ts_user_headers.Add("Content-Type", "application/xml")
 $ts_user_headers.Add("x-tableau-auth", $ts_token)
 
+$ts_user_response = Invoke-RestMethod $ts_site_url -Method 'GET' -Headers $ts_user_headers
+$ts_users = $ts_user_response.tsResponse.users.user.name
 
-$ts_api_url = $ts_url+"/api/"+$ts_api_ver+"/sites/"+$ts_site+"/users"
+#Get Azure Access Token
+$az_headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+$az_headers.Add("Content-Type", "application/x-www-form-urlencoded")
+#$headers.Add("SdkVersion", "postman-graph/v1.0")
+$az_body = "grant_type=client_credentials&client_id="+$client_id+"&client_secret="+$client_secret+"&scope="+$scope
+$az_token_response = Invoke-RestMethod $auth_url -Method 'POST' -Headers $az_headers -Body $az_body
 
 #List Azure AD Users
-$az_user_headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
 #$headers.Add("SdkVersion", "postman-graph/v1.0")
-$az_user_headers.Add("Authorization", "Bearer "+ $az_token_response.access_token )
+$headers.Add("Authorization", "Bearer "+ $az_token_response.access_token )
 
-$az_response = Invoke-RestMethod 'https://graph.microsoft.com/v1.0/users' -Method 'GET' -Headers $az_user_headers
+$az_response = Invoke-RestMethod $ms_graph_url'v1.0/users' -Method 'GET' -Headers $headers
 
-ForEach ($user in ($az_response.value | Where-Object{$_.$filterProperty -eq $filterValue}))
+#| Select-Object displayName, userPrincipalName
+$az_users = $($az_response.value | Where-Object{$_.jobTitle -eq 'Tableau'} | Select-Object @{N='displayName';E={$_.displayName}}, @{N='userPrincipalName';E={$_.userPrincipalName.split('#')[0].split('@')[0]}}).userPrincipalName.toLower()  
+
+$delta = Compare-Object $ts_users $az_users | Where-Object{$_.SideIndicator -eq '=>'}
+
+#Loop over all users and add the AD users that are missing in Tableau that contain the filter value if a filter is in use 
+ForEach ($user in $delta.InputObject)
 {
-    $u = $user.givenName
-   
-        $ts_user_body = "<tsRequest>`n	<user name=`"$u`" siteRole=`"$SiteRole`">`n		`n	</user>`n</tsRequest>"
-        $response = Invoke-RestMethod $ts_api_url -Method 'POST' -Headers $ts_user_headers -Body $ts_user_body
-    
-    Write-Host "Added "$u" to Tableau server"
-    
+        try{
+                $ts_user_body = "<tsRequest>`n	<user name=`"$user`" siteRole=`"$SiteRole`">`n		`n	</user>`n</tsRequest>"
+                $response = Invoke-RestMethod $ts_site_url -Method 'POST' -Headers $ts_user_headers -Body $ts_user_body
+                Write-Host "Added "$user" to Tableau server as site role " $siteRole
+        }
+        catch{
+                $PSItem.Exception.Message
+        }
+
+            
 }
-
-
-
-
-
