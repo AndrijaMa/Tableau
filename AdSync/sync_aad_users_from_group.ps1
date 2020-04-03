@@ -24,6 +24,8 @@ $SecurityGroup = "Creators"
 #Enter default site role
 $siteRole = 'Viewer'
 
+###################################################################################################
+###################################################################################################
 $ts_auth_url = $ts_url+'/api/'+$ts_api_ver+'/auth/signin'
 
 #Get Tableau Acess Token
@@ -59,14 +61,14 @@ $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
 $headers.Add("Authorization", "Bearer "+ $az_token_response.access_token )
 $SecurityGroup = "'$SecurityGroup'"
 
-$group_url = 'https://graph.microsoft.com/v1.0/groups?$filter=displayName eq '+$SecurityGroup
+$group_url = $ms_graph_url+'v1.0/groups?$filter=displayName eq '+$SecurityGroup
  
 $az_response = Invoke-RestMethod $group_url -Method 'GET' -Headers $headers
 
 #| Select-Object displayName, userPrincipalName
 $az_aad_group = $az_response.value.id
 
-$az_aad_group_members = Invoke-RestMethod  "https://graph.microsoft.com/v1.0/groups/$az_aad_group/members" -Method 'GET' -Headers $headers
+$az_aad_group_members = Invoke-RestMethod  $ms_graph_url"v1.0/groups/$az_aad_group/members" -Method 'GET' -Headers $headers
 
 $az_users = $az_aad_group_members.value.mail
 
@@ -87,7 +89,7 @@ ForEach ($user in $delta.InputObject)
 
                 $ts_update_user_body = "<tsRequest>`n	<user	email=`"+$user+`"`n			password=`"$user_password`"`n			/>`n</tsRequest>"
                 $ts_update_url = $ts_url+'/api/3.4/sites/'+$siteid+'/users/'+$user_id
-                
+
                 $update = Invoke-RestMethod $ts_update_url -Method 'PUT' -Headers $ts_user_headers -Body $ts_update_user_body
                 Write-Host "Added "$user" to Tableau server as site role " $siteRole
         }

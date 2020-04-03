@@ -24,6 +24,8 @@ $ts_site_name = 'Home'
 #Enter default site role
 $siteRole = 'Viewer'
 
+###################################################################################################
+###################################################################################################
 $ts_auth_url = $ts_url+'/api/'+$ts_api_ver+'/auth/signin'
 
 #Get Tableau Acess Token
@@ -86,6 +88,4 @@ ForEach ($user in $delta.InputObject)
         catch{
                 $PSItem.Exception.Message
         }
-
-            
 }
