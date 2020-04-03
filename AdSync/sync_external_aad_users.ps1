@@ -1,25 +1,28 @@
 #Azure AD information
 #Enter Azure AD Tennent ID
-$tenant_Id = ""
+$tenant_Id = "****"
 #Enter Azure AD Client Secret
-$client_secret = ""
+$client_secret = "****"
 #Enter azure AD client ID
-$client_id = ""
+$client_id = "****"
 $ms_online_url = 'https://login.microsoftonline.com/'
 $auth_url = $ms_online_url+$tenant_Id+'/oauth2/v2.0/token'
 $ms_graph_url = 'https://graph.microsoft.com/'
 $scope = $ms_graph_url+'.default'
 
 #Enter the server base url
-$ts_url = ''
-#Enter the Tableau api version 3.4
-$ts_api_ver = ''
+$ts_url = 'http://****'
+#Enter the Tableau api version
+$ts_api_ver = '3.4'
 
-$ts_user = ''
-$ts_password = ''
+$ts_user = '****'
+$ts_password = '****'
+$user_password = '****'
+
+$ts_site_name = 'Home'
 
 #Enter default site role
-$siteRole = 'Unlicensed'
+$siteRole = 'Viewer'
 
 $ts_auth_url = $ts_url+'/api/'+$ts_api_ver+'/auth/signin'
 
@@ -59,6 +62,10 @@ $az_response = Invoke-RestMethod $ms_graph_url'v1.0/users?$filter=userType eq ''
 
 $az_users =  $az_response.value.mail
 
+$ts_site_id = $ts_url+"/api/3.4/sites/"+$ts_site_name+"?key=name"
+$siteid = Invoke-RestMethod $ts_site_id -Method 'GET' -Headers $ts_user_headers 
+$siteid = $siteid.tsResponse.site.ID
+
 $delta = Compare-Object $ts_users $az_users | Where-Object{$_.SideIndicator -eq '=>'}
 
 #Loop over all users and add the AD users that are missing in Tableau that contain the filter value if a filter is in use 
@@ -67,6 +74,13 @@ ForEach ($user in $delta.InputObject)
         try{
                 $ts_user_body = "<tsRequest>`n	<user name=`"$user`" siteRole=`"$SiteRole`">`n		`n	</user>`n</tsRequest>"
                 $response = Invoke-RestMethod $ts_site_url -Method 'POST' -Headers $ts_user_headers -Body $ts_user_body
+                $user_id = $response.tsResponse.user.id
+                
+                $ts_update_user_body = "<tsRequest>`n	<user	email=`"+$user+`"`n			password=`"$user_password`"`n			/>`n</tsRequest>"
+                $ts_update_url = $ts_url+'/api/3.4/sites/'+$siteid+'/users/'+$user_id
+
+                $update = Invoke-RestMethod $ts_update_url -Method 'PUT' -Headers $ts_user_headers -Body $ts_update_user_body
+               
                 Write-Host "Added "$user" to Tableau server as site role " $siteRole
         }
         catch{
