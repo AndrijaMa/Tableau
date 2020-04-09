@@ -20,7 +20,7 @@ $personalAccessTokenName=""
 $personalAccessTokenSecret="" 
 
 #The name of the site to where the users will be imported to
-$ts_site_name = 'Default'
+$ts_site_name = 'Default'  
 
 #Enter default site role
 $siteRole = 'Viewer'
