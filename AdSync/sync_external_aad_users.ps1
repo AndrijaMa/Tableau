@@ -18,7 +18,7 @@ $user_password = '****'
 $ts_site_name = 'Home'
 
 #Enter default site role
-$siteRole = 'Viewer'
+$siteRole = 'Viewer'  
 
 ###################################################################################################
 ###########Dont change anything below this line####################################################
