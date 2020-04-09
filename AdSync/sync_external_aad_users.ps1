@@ -5,10 +5,6 @@ $tenant_Id = "****"
 $client_secret = "****"
 #Enter azure AD client ID
 $client_id = "****"
-$ms_online_url = 'https://login.microsoftonline.com/'
-$auth_url = $ms_online_url+$tenant_Id+'/oauth2/v2.0/token'
-$ms_graph_url = 'https://graph.microsoft.com/'
-$scope = $ms_graph_url+'.default'
 
 #Enter the server base url
 $ts_url = 'http://****'
@@ -25,7 +21,13 @@ $ts_site_name = 'Home'
 $siteRole = 'Viewer'
 
 ###################################################################################################
+###########Dont change anything below this line####################################################
 ###################################################################################################
+$ms_online_url = 'https://login.microsoftonline.com/'
+$auth_url = $ms_online_url+$tenant_Id+'/oauth2/v2.0/token'
+$ms_graph_url = 'https://graph.microsoft.com/'
+$scope = $ms_graph_url+'.default'
+
 $ts_auth_url = $ts_url+'/api/'+$ts_api_ver+'/auth/signin'
 
 #Get Tableau Acess Token
@@ -64,7 +66,7 @@ $az_response = Invoke-RestMethod $ms_graph_url'v1.0/users?$filter=userType eq ''
 
 $az_users =  $az_response.value.mail
 
-$ts_site_id = $ts_url+"/api/3.4/sites/"+$ts_site_name+"?key=name"
+$ts_site_id = $ts_url+"/api/"+$ts_api_ver+"/sites/"+$ts_site_name+"?key=name"
 $siteid = Invoke-RestMethod $ts_site_id -Method 'GET' -Headers $ts_user_headers 
 $siteid = $siteid.tsResponse.site.ID
 
@@ -79,7 +81,7 @@ ForEach ($user in $delta.InputObject)
                 $user_id = $response.tsResponse.user.id
                 
                 $ts_update_user_body = "<tsRequest>`n	<user	email=`"+$user+`"`n			password=`"$user_password`"`n			/>`n</tsRequest>"
-                $ts_update_url = $ts_url+'/api/3.4/sites/'+$siteid+'/users/'+$user_id
+                $ts_update_url = $ts_url+'/api/'+$ts_api_ver+'/sites/'+$siteid+'/users/'+$user_id
 
                 $update = Invoke-RestMethod $ts_update_url -Method 'PUT' -Headers $ts_user_headers -Body $ts_update_user_body
                
