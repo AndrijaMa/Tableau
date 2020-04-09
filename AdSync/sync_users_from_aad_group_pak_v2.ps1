@@ -6,17 +6,21 @@ $client_id = ""
 #Enter Azure AD Client Secret
 $client_secret = ""
 
+#The name of the Azure AD groups that the script will import the users from 
+$SecurityGroups = @("Creators","Explorer")
+
+#Tableau Server information 
 #Enter the server base url
 $ts_url = ''
 #Enter the Tableau api version
 $ts_api_ver = '3.7'
 
+#Create the Personal Access Tokens from the Site Settings gage
 $personalAccessTokenName="" 
 $personalAccessTokenSecret="" 
 
+#The name of the site to where the users will be imported to
 $ts_site_name = 'Default'
-
-$SecurityGroups = @("Creators","Explorer")
 
 #Enter default site role
 $siteRole = 'Viewer'
