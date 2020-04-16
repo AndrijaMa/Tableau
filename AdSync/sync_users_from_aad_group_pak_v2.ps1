@@ -91,7 +91,7 @@ do{
                 $page++
         }        
         
-}until([int]$page -eq [int]$maxPages)
+}until([int]$page -gt [int]$maxPages)
 
 #Get Azure Access Token
 $az_headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
