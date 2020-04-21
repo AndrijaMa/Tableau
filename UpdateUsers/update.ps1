@@ -8,7 +8,7 @@ $personalAccessTokenSecret="J46AaismTxmuutp7WzF8dA==:TMJ4cWShqQpBgmFg1goSg7FheXn
 #Enter the server base url
 $ts_url = 'https://tableauam.westeurope.cloudapp.azure.com'
 
-$ts_api_ver = '3.7'
+$ts_api_ver = '3.5'
 # #Enter default site role that the imported users will get
 $siteRole_from = 'Explorer'
 $siteRole_to = 'Creator'
