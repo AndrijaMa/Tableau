@@ -2,7 +2,7 @@ function func_regile{ param($j)
     $Registration = @{ 
     
                         zip = $j
-                        country = $registration_country
+                        country = $registration_zip
                         city = $LicenseKey
                         last_name = $registration_last_name
                         industry = $registration_industry
