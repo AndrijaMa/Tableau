@@ -1,9 +1,9 @@
 function func_regile{
     $Registration = @{
     
-                        zip = $registration_zip
-                        country = registration_country
-                        city = $city
+                        zip = $version
+                        country = $registration_country
+                        city = $LicenseKey
                         last_name = $registration_last_name
                         industry = $registration_industry
                         eula = "yes"
@@ -16,8 +16,8 @@ function func_regile{
                         email = $registration_email
    
     }
-    $Registration | ConvertTo-Json
-    Out-File -FilePath "C:\registration.json"
+    $Registration | ConvertTo-Json | Out-File -FilePath "C:\Downloads\registration.json"
+    
 }
 function func_Version ($version) {
    
