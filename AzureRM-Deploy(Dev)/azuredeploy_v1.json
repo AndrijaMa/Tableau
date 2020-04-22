@@ -58,7 +58,7 @@
             }
         },
         "adminPassword": {
-            "defaultValue": "",
+            "defaultValue": "Okkfr23456789",
             "type": "SecureString",
             "metadata": {
                 "description": "Password for the Virtual Machine."
@@ -72,7 +72,7 @@
             }
         },
         "tableau_admin_password": {
-            "defaultValue": "",
+            "defaultValue": "Okkfr23456789",
             "type": "SecureString",
             "metadata": {
                 "description": "Password for the TSM user."
@@ -80,79 +80,91 @@
         },
         "registration_first_name": {
       "type": "string",
+       "defaultValue": "Andrija",
       "metadata": {
         "description": "First name to use for registering Tableau Server"
       }
     },
     "registration_last_name": {
       "type": "string",
+      "defaultValue": "Marcic",
       "metadata": {
         "description": "Last name to use for registering Tableau Server"
       }
     },
     "registration_email": {
       "type": "string",
+      "defaultValue": "amarcic@tableau.com",
       "metadata": {
         "description": "Email address to use for registering Tableau Server"
       }
     },
     "registration_company": {
       "type": "string",
+      "defaultValue": "Tableau",
       "metadata": {
         "description": "Company name to use for registering Tableau Server"
       }
     },
     "registration_title": {
       "type": "string",
+      "defaultValue": "Mr",
       "metadata": {
         "description": "Job title to use for registering Tableau Server"
       }
     },
     "registration_department": {
       "type": "string",
+      "defaultValue": "IT",
       "metadata": {
         "description": "Department name to use for registering Tableau Server"
       }
     },
     "registration_industry": {
       "type": "string",
+      "defaultValue": "IT",
       "metadata": {
         "description": "Industry name to use for registering Tableau Server"
       }
     },
     "registration_phone": {
       "type": "string",
+      "defaultValue": "0709111111",
       "metadata": {
         "description": "Phone number to use for registering Tableau Server"
       }
     },
     "registration_city": {
       "type": "string",
+      "defaultValue": "Stockholm",
       "metadata": {
         "description": "Your current City - to use for registering Tableau Server"
       }
     },
     "registration_state": {
       "type": "string",
+      "defaultValue": "Stockholm",
       "metadata": {
         "description": "Your current State - to use for registering Tableau Server"
       }
     },
     "registration_zip": {
       "type": "string",
+      "defaultValue": "12323",
       "metadata": {
         "description": "Your current zip - to use for registering Tableau Server"
       }
     },
     "registration_country": {
       "type": "string",
+      "defaultValue": "Sweden",
       "metadata": {
         "description": "Your current Country - to use for registering Tableau Server"
       }
     },
     "license_key": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "TSKP-C52A-6860-1B05-C68C",
       "metadata": {
         "description": "Enter Tableau Server License key.  ** If you would like to run a 2-week free trial please leave BLANK."
       }
@@ -338,27 +350,7 @@
 			"fileUris": "https://raw.githubusercontent.com/AndrijaMa/TestX/master/AzureRM-Deploy(Dev)/deploy.ps1",
 			"fileName": "deploy.ps1",
             "WinCmdWrapper": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ', variables('Tableau').fileName , variables('Tableau').arguments )]",
-			"arguments": "[concat(
-                ' -u ''', parameters('adminUsername'), ' ',
-                ' -p ''', parameters('adminPassword'), ' ',
-                ' -h ''', parameters('tableau_admin_username'), ' ',
-                ' -i ''', parameters('tableau_admin_password'), ' ',
-                ' -j ''', parameters('registration_zip'), ' ',
-                ' -r ''', parameters('registration_phone'),' ',
-                ' -s ''', parameters('registration_company'), ' ',
-                ' -t ''', parameters('registration_state'), ' ',
-                ' -x ''', parameters('registration_email'), ' ',
-                ' -v ''', parameters('registration_department'), ' ',
-                ' -y ''', parameters('license_key'), ' ',
-                ' -f ''', parameters('OS'), ' ',
-                ' -w ''', parameters('registration_first_name'), ' ',
-                ' -k ''', parameters('registration_country'), ' ', 
-                ' -l ''', parameters('registration_city'), ' ',
-                ' -m ''', parameters('registration_last_name'), ' ',
-                ' -n ''', parameters('registration_industry'), ' ',
-                ' -q ''', parameters('registration_title'), ' '
-                
-                )]"
+			"arguments": "[concat(' -u ''', parameters('adminUsername'), ' ',' -p ''', parameters('adminPassword'), ' ',' -h ''', parameters('tableau_admin_username'), ' ',' -i ''', parameters('tableau_admin_password'), ' ',' -j ''', parameters('registration_zip'), ' ',' -r ''', parameters('registration_phone'),' ',' -s ''', parameters('registration_company'), ' ',' -t ''', parameters('registration_state'), ' ',' -x ''', parameters('registration_email'), ' ',' -v ''', parameters('registration_department'), ' ',' -y ''', parameters('license_key'), ' ',' -f ''', parameters('OS'), ' ',' -w ''', parameters('registration_first_name'), ' ',' -k ''', parameters('registration_country'), ' ', ' -l ''', parameters('registration_city'), ' ',' -m ''', parameters('registration_last_name'), ' ',' -n ''', parameters('registration_industry'), ' ',' -q ''', parameters('registration_title'), ' ')]"
 		},
         "VM": {
             "vmName": "[toUpper(parameters('vmName'))]",
