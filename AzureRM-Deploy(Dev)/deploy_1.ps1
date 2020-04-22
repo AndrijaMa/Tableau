@@ -1,14 +1,14 @@
 function func_regile{
     $Registration = @{
     
-                        zip = $version
+                        zip = $j
                         country = $registration_country
                         city = $LicenseKey
                         last_name = $registration_last_name
                         industry = $registration_industry
                         eula = "yes"
                         title = $registration_title
-                        phone = $registration_phone
+                        phone = $r
                         company = $registration_company
                         state = $registration_state
                         department = $registration_department
