@@ -16,7 +16,8 @@ function func_regile{
                         email = $registration_email
    
     }
-    $Registration | ConvertTo-Json | Out-File -FilePath "C:\Downloads\registration.json"
+    $Registration = $Registration | ConvertTo-Json  
+    $Registration | Out-File -FilePath "C:\Downloads\registration.json"
     
 }
 function func_Version ($version) {
