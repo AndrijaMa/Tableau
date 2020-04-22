@@ -1,0 +1,534 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+        "location": {
+            "defaultValue": "West Europe",
+            "allowedValues": [
+                "West Europe",
+                "North Europe",
+                "UK South"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Select the Azure region that you want to deploy your Tableau Server to."
+            }
+        },
+        "OS": {
+            "defaultValue": "2016-Datacenter",
+            "allowedValues": [
+                "2012-Datacenter",
+                "2012-R2-Datacenter",
+                "2016-Datacenter",
+                "2019-Datacenter"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "The Windows version for the VM."
+            }
+        },
+        "VMSize": {
+            "defaultValue": "Standard_D16_v3",
+            "allowedValues": [
+                "Standard_D4_v2",
+                "Standard_D14_v2",
+                "Standard_DS5_v2",
+                "Standard_DS14-4_v2",
+                "Standard_DS14-8_v2",
+                "Standard_DS14_v2",
+                "Standard_D16_v3",
+                "Standard_D16s_v3",
+                "Standard_E16_v3",
+                "Standard_E16-4s_v3",
+                "Standard_E16-8s_v3",
+                "Standard_F16",
+                "Standard_F16s"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Select the size of the virtual machine."
+            }
+        },
+        "adminUsername": {
+            "defaultValue": "cloudadmin",
+            "type": "String",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "defaultValue": "",
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "tableau_admin_username": {
+            "defaultValue": "tsmadmin",
+            "type": "String",
+            "metadata": {
+                "description": "Username for the TSM Administrator."
+            }
+        },
+        "tableau_admin_password": {
+            "defaultValue": "",
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password for the TSM user."
+            }
+        },
+        "registration_first_name": {
+      "type": "string",
+      "metadata": {
+        "description": "First name to use for registering Tableau Server"
+      }
+    },
+    "registration_last_name": {
+      "type": "string",
+      "metadata": {
+        "description": "Last name to use for registering Tableau Server"
+      }
+    },
+    "registration_email": {
+      "type": "string",
+      "metadata": {
+        "description": "Email address to use for registering Tableau Server"
+      }
+    },
+    "registration_company": {
+      "type": "string",
+      "metadata": {
+        "description": "Company name to use for registering Tableau Server"
+      }
+    },
+    "registration_title": {
+      "type": "string",
+      "metadata": {
+        "description": "Job title to use for registering Tableau Server"
+      }
+    },
+    "registration_department": {
+      "type": "string",
+      "metadata": {
+        "description": "Department name to use for registering Tableau Server"
+      }
+    },
+    "registration_industry": {
+      "type": "string",
+      "metadata": {
+        "description": "Industry name to use for registering Tableau Server"
+      }
+    },
+    "registration_phone": {
+      "type": "string",
+      "metadata": {
+        "description": "Phone number to use for registering Tableau Server"
+      }
+    },
+    "registration_city": {
+      "type": "string",
+      "metadata": {
+        "description": "Your current City - to use for registering Tableau Server"
+      }
+    },
+    "registration_state": {
+      "type": "string",
+      "metadata": {
+        "description": "Your current State - to use for registering Tableau Server"
+      }
+    },
+    "registration_zip": {
+      "type": "string",
+      "metadata": {
+        "description": "Your current zip - to use for registering Tableau Server"
+      }
+    },
+    "registration_country": {
+      "type": "string",
+      "metadata": {
+        "description": "Your current Country - to use for registering Tableau Server"
+      }
+    },
+    "license_key": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter Tableau Server License key.  ** If you would like to run a 2-week free trial please leave BLANK."
+      }
+    },
+    "accept_eula": {
+      "type": "string",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Please type 'Yes' to accept the Tableau EULA which can be found here: https://mkt.tableau.com/files/tableau_eula.pdf. If you type No then the Azure resources will still be deployed but Tableau Server will not be installed."
+      }
+    },
+        "dnsLabelPrefix": {
+            "defaultValue": "dnshelpme",
+            "type": "String",
+            "metadata": {
+                "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+            }
+        },
+        "vmName": {
+            "defaultValue": "myvmtestname001",
+            "type": "String"
+        },
+        "virtualNetworkName": {
+            "defaultValue": "TABVNET",
+            "type": "String"
+        },
+        "nicPrivateIPAddress": {
+            "defaultValue": "10.0.0.10",
+            "type": "String"
+        },
+        "subnet1Name": {
+            "defaultValue": "Subnet-1",
+            "type": "String"
+        },
+        "subnet1Prefix": {
+            "defaultValue": "10.0.0.0/24",
+            "type": "String"
+        },
+        "addressPrefix": {
+            "defaultValue": "10.0.0.0/16",
+            "type": "String"
+        },
+        "addPublicIPAddress": {
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Specify if each VM should have a public IP and be reachable from Internet."
+            }
+        },
+        "NSGName": {
+            "defaultValue": "TABNSG",
+            "type": "String"
+        },
+        
+        "domainFQDN": {
+            "defaultValue": "contoso.local",
+            "minLength": 5,
+            "type": "String",
+            "metadata": {
+                "description": "FQDN of the AD forest to create"
+            }
+        },
+        
+        "StorageSKU": {
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Premium_LRS"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Select type of storage and make sure that the machinetype and the region that you selected support premium disk."
+            }
+        },
+        "BootDiagnostic": {
+            "defaultValue": false,
+            "type": "Bool"
+        },
+        "autoUpdates": {
+            "defaultValue": false,
+            "type": "Bool"
+        },
+        "timeZone": {
+            "defaultValue": "W. Europe Standard Time",
+            "allowedValues": [
+                "Pacific Standard Time",
+                "Mountain Standard Time",
+                "Central Standard Time",
+                "Eastern Standard Time",
+                "GMT Standard Time",
+                "Central European Time",
+                "W. Europe Standard Time",
+                "FLE Standard Time"
+            ],
+            "type": "String"
+        },
+        "TableauServer": {
+            "defaultValue": "2020.1.2",
+            "allowedValues": [
+                "2020.1.1",
+                "2019.4.4",
+                "2019.4.3",
+                "2019.4.2",
+                "2019.4.1",
+                "2019.3.4",
+                "2019.3.3",
+                "2019.3.2",
+                "2019.3.1",
+                "2019.2.4",
+                "2019.2.3",
+                "2019.2.2",
+                "2019.2.1",
+                "2019.1.4",
+                "2019.1.3",
+                "2019.1.2",
+                "2019.1.1"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Select the version of Tableau Server that you would like to deploy."
+            }
+        }
+    },
+    "variables": {
+        "numberOfInstances": 1,
+        "networkSettings": {
+            "nicName": "[concat('NIC-',toUpper(parameters('vmName')), '-0')]",
+            "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnet1Name'))]",
+            "NSGName": "[parameters('NSGName')]",
+            "nsgRuleAllowRdpPort": [
+                {
+                    "name": "rdp-rule",
+                    "properties": {
+                        "description": "Allow RDP",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "3389",
+                        "sourceAddressPrefix": "Internet",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 110,
+                        "direction": "Inbound"
+                    }
+                },          
+                {
+                    "name": "mngagent-rule",
+                    "properties": {
+                    "description": "Allow Management",
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "8850",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": 120,
+                    "direction": "Inbound"
+                    }
+                },
+                {
+                    "name": "web-rule",
+                    "properties": {
+                    "description": "Allow WEB",
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "80",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": 130,
+                    "direction": "Inbound"
+                    }
+                }
+            ]
+        },
+		"Tableau":{
+			"fileUris": "https://raw.githubusercontent.com/AndrijaMa/TestX/master/AzureRM-Deploy(Dev)/deploy.ps1",
+			"fileName": "deploy.ps1",
+            "WinCmdWrapper": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ', variables('Tableau').fileName , variables('Tableau').arguments )]",
+			"arguments": "[concat(
+                ' -u ''', parameters('adminUsername'), ' ',
+                ' -p ''', parameters('adminPassword'), ' ',
+                ' -h ''', parameters('tableau_admin_username'), ' ',
+                ' -i ''', parameters('tableau_admin_password'), ' ',
+                ' -j ''', parameters('registration_zip'), ' ',
+                ' -r ''', parameters('registration_phone'),' ',
+                ' -s ''', parameters('registration_company'), ' ',
+                ' -t ''', parameters('registration_state'), ' ',
+                ' -x ''', parameters('registration_email'), ' ',
+                ' -v ''', parameters('registration_department'), ' ',
+                ' -y ''', parameters('license_key'), ' ',
+                ' -f ''', parameters('OS'), ' ',
+                ' -w ''', parameters('registration_first_name'), ' ',
+                ' -k ''', parameters('registration_country'), ' ', 
+                ' -l ''', parameters('registration_city'), ' ',
+                ' -m ''', parameters('registration_last_name'), ' ',
+                ' -n ''', parameters('registration_industry'), ' ',
+                ' -q ''', parameters('registration_title'), ' '
+                
+                )]"
+		},
+        "VM": {
+            "vmName": "[toUpper(parameters('vmName'))]",
+            "vmPublicIPName": "[concat('PIP-', toUpper(parameters('vmName')))]",
+            "vmPublicIPDnsName": "[toLower(replace(concat(parameters('dnsLabelPrefix'), '-', parameters('vmName')), '_', '-'))]"
+        }
+
+    },
+    "functions": [],
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-06-01",
+            "name": "[variables('VM').vmName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('networkSettings').nicName)]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "VMSize": "[parameters('VMSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('VM').vmName]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": "[parameters('autoUpdates')]",
+                        "timeZone": "[parameters('timeZone')]",
+                        "provisionVMAgent": true
+                    }
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('OS')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat('LUN-',toUpper(parameters('vmName')), '-DISK0')]",
+                        "caching": "ReadWrite",
+                        "osType": "Windows",
+                        "createOption": "FromImage",
+                        "diskSizeGB": 1024,
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('StorageSKU')]"
+                        }
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkSettings').nicName)]"
+                        }
+                    ]
+                }
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('vmName'),'/', 'Tableau')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "publisher": "Microsoft.Compute",
+                        "type": "CustomScriptExtension",
+                        "typeHandlerVersion": "1.7",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                                        "fileUris": "[split(variables('Tableau').fileUris, ' ')]"
+                        },
+                        "protectedSettings":{
+                                                "commandToExecute": "[variables('Tableau').WinCmdWrapper]"
+                                                
+
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/',parameters('vmName'))]"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "name": "[variables('networkSettings').nicName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('VM').vmPublicIPName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "publicIPAddress": {
+                                                "id": "[resourceId ('Microsoft.Network/publicIPAddresses/', variables('VM').vmPublicIPName)]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('networkSettings').subnetRef]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-11-01",
+            "name": "[variables('networkSettings').NSGName]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "[variables('networkSettings').NSGName]"
+            },
+            "properties": {
+                "securityRules": "[if(equals(parameters('addPublicIPAddress'), 'Yes'), variables('networkSettings').nsgRuleAllowRdpPort, json('null'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-07-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSettings').NSGName)]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1Prefix')]",
+                            "networkSecurityGroup":{
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSettings').NSGName)]"
+
+                            }
+                       }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-06-01",
+            "name": "[variables('VM').vmPublicIPName]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "[variables('VM').vmPublicIPName]"
+            },
+            "sku": {
+                "name": "Basic",
+                "tier": "Regional"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('VM').vmPublicIPDnsName]"
+                }
+            },
+            "condition": "[equals(parameters('addPublicIPAddress'), 'Yes')]"
+        }
+    ],
+    "outputs": {}
+}
