@@ -1,5 +1,5 @@
-function func_regile{
-    $Registration = @{
+function func_regile{ param($j)
+    $Registration = @{ 
     
                         zip = $j
                         country = $registration_country
@@ -283,7 +283,7 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 }
 
 function func_main(){
-    func_regile
+    func_regile -j $j
     #Exclude folders from realtime scanning
     #func_AntiVirus
     #Set paramaters for the Tableau Server version
