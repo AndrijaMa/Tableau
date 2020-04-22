@@ -1,9 +1,31 @@
+Param(
+    [string]$ts_admin_un,
+    [string]$ts_admin_pw,
+    [string]$reg_first_name,
+    [string]$reg_last_name,
+    [string]$reg_email,
+    [string]$reg_company,
+    [string]$reg_title,
+    [string]$reg_department,
+    [string]$reg_industry,
+    [string]$reg_phone,
+    [string]$reg_city,
+    [string]$reg_state,
+    [string]$reg_zip,
+    [string]$reg_country,
+    [string]$license_key,
+    [string]$install_script_url,
+    [string]$local_admin_user,
+    [string]$local_admin_pass,
+    [string]$eula
+)
+
 function func_regile{ param($j)
     $Registration = @{ 
     
-                        zip = $j
-                        country = $registration_zip
-                        city = $LicenseKey
+                        zip = $reg_zip
+                        country = $reg_country
+                        city = $license_key
                         last_name = $registration_last_name
                         industry = $registration_industry
                         eula = "yes"
@@ -13,7 +35,7 @@ function func_regile{ param($j)
                         state = $registration_state
                         department = $registration_department
                         first_name = $registration_first_name
-                        email = $registration_email
+                        email = $reg_email
    
     }
     $Registration = $Registration | ConvertTo-Json  
