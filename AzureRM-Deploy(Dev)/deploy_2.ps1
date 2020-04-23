@@ -29,14 +29,14 @@ $iDP_config = "cf.json"
 $other = "other.json"
 $log_file = "install.log"
 $event_file = "event.log"
-$bootstrapfile = "bootstrap.json"
+$bootstrapfile = "bootstrap.json"  
 
 $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
 $global:DownloadFile = ''
 $global:ts_build = ''
-
+ 
 function func_regFile{ 
         ## 2. make registration.json
         #TODO: add parameter for accepting eula
