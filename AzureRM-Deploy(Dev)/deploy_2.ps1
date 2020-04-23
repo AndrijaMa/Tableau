@@ -304,7 +304,7 @@ function func_main(){
     func_regFile
     func_configFile
     func_Other
-    #func_secrets
+    
     #Exclude folders from realtime scanning
     #func_AntiVirus
     #Set paramaters for the Tableau Server version
