@@ -30,7 +30,7 @@ $log_file = "install.log"
 $event_file = "event.log"
 $bootstrapfile = "bootstrap.json"
 $ts_build | Out-File $folder+"version.txt"
-"hello" | Out-File $folder+"version1.txt"
+"hello" | Out-File $folder"version1.txt"
 $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
@@ -127,11 +127,37 @@ function Write-ToLog ($text) {
 
 }
 
+# function func_Download($folder, $log_file, $event_file,$version_major, $version_minor, $version_hotfix){
+    
+#     try{#Set the path  to the server version of Tableau that you want to download
+#         $global:DownloadFile = "TableauServer-64bit-"+$version_major+"-"+$version_minor+"-"+$version_hotfix+".exe"
+#         $url = "https://downloads.tableau.com/esdalt/"+$version_major+"."+$version_minor+"."+$version_hotfix+"/"+$DownloadFile
+
+#         Write-ToLog -text $url
+#         #Download the server installation file
+#         if(Test-Path $($folder+$global:DownloadFile))
+#         {
+#             Write-ToLog -text "Downloading Tableau Server installation media download..." 
+#             Write-ToLog -text  $($folder+$DownloadFile) ' exists'
+#         }
+#         else
+#         { 
+#             Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
+#             Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
+#             Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
+#         }
+
+#     }
+#     catch
+#         {
+#             Write-ToLog -text $PSItem.Exception.Message
+#         }
+# }
 function func_Download($folder, $log_file, $event_file,$version_major, $version_minor, $version_hotfix){
     
     try{#Set the path  to the server version of Tableau that you want to download
-        $global:DownloadFile = "TableauServer-64bit-"+$version_major+"-"+$version_minor+"-"+$version_hotfix+".exe"
-        $url = "https://downloads.tableau.com/esdalt/"+$version_major+"."+$version_minor+"."+$version_hotfix+"/"+$DownloadFile
+        $global:DownloadFile = "TableauServer-64bit-2020-1-2.exe"
+        $url = "https://downloads.tableau.com/esdalt/2020.1.2/TableauServer-64bit-2020-1-2.exe"
 
         Write-ToLog -text $url
         #Download the server installation file
@@ -153,7 +179,6 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
             Write-ToLog -text $PSItem.Exception.Message
         }
 }
-
 function func_Install($file_path, $log_path)
 {
     
@@ -306,7 +331,7 @@ function func_main(){
     #Exclude folders from realtime scanning
     #func_AntiVirus
     #Set paramaters for the Tableau Server version
-    func_Version 
+    #func_Version 
     #Download Tableau server installation files
     func_Download  -folder $folder $log_file -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
     #Install Tableau server
