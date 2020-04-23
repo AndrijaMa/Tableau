@@ -28,7 +28,7 @@ $reg_file = $folder+"rg.json"
 $iDP_config = $folder+"cf.json"
 $other = $folder+"other.json"
 $log_file = $folder+"install.log"
-$event_file = $event_file+"event.log"
+$event_file = $folder+"event.log"
 $bootstrapfile = "bootstrap.json"  
 
 $global:major = ''
@@ -150,7 +150,8 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
         }
         else
         { 
-            Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
+            #Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
+            Start-BitsTransfer -Source $url -Destination $($folder+$DownloadFile)
             Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
             Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
         }
