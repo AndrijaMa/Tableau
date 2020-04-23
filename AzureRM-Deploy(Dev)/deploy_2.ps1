@@ -21,28 +21,26 @@ Param(
     [string]$eula
 )
 
+
 $folder = "C:\tab\"  
 $reg_file = "rg.json"
 $iDP_config = "cf.json"
 $log_file = "install.log"
 $event_file = "event.log"
 $bootstrapfile = "bootstrap.json"
-
+$ts_build | Out-File $folder"version.txt"
 $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
 $global:DownloadFile = ''
+$global:local_admin_user = $local_admin_user
+$global:local_admin_pass = $local_admin_pass
+$global:content_admin_user = $ts_admin_un
+$global:content_admin_pass = $ts_admin_pw
+$global:product_keys = $license_key
+    
 
-function func_secrets{
-    
-        $global:local_admin_user = $local_admin_user
-        $global:local_admin_pass = $local_admin_pass
-        $global:content_admin_user = $ts_admin_un
-        $global:content_admin_pass = $ts_admin_pw
-        $global:product_keys = $license_key
-    
-}
-function func_regile{ 
+#function func_regile{ 
    ## 2. make registration.json
 #TODO: add parameter for accepting eula
    @{
@@ -60,7 +58,7 @@ function func_regile{
         country = $reg_country
         eula = "yes"
     }| ConvertTo-Json -depth 10 | Out-File $global:folder$reg_file -Encoding unicode
-}
+#}
 
 function func_iDPfile{ 
      @{
@@ -77,11 +75,11 @@ function func_Version ($version) {
    
     if(!$Version)
     {
-        Write-Host "-Version is missing a value. It should be in the format xxxx.x.x like for example 2019.1.4 or type Trial to active a 14 day trial"
+        Write-ToLog -text  "-Version is missing a value. It should be in the format xxxx.x.x like for example 2019.1.4 or type Trial to active a 14 day trial"
     }
     elseif($version.ToString().Length -ne 8)
     {
-        Write-Host "-Version is in the wrong format. It should be in the format xxxx.x.x like for example 2019.1.4"
+        Write-ToLog -text "-Version is in the wrong format. It should be in the format xxxx.x.x like for example 2019.1.4"
         
     }
 
@@ -127,7 +125,7 @@ function Write-ToLog ($text) {
 
 }
 
-function func_Download($folder, $reg_file, $iDP_config, $log_file, $event_file,$version_major, $version_minor, $version_hotfix){
+function func_Download($folder, $log_file, $event_file,$version_major, $version_minor, $version_hotfix){
     
     try{#Set the path  to the server version of Tableau that you want to download
         $global:DownloadFile = "TableauServer-64bit-"+$version_major+"-"+$version_minor+"-"+$version_hotfix+".exe"
@@ -301,11 +299,11 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 
 function func_main(){
     func_createFolder
-    func_regile
+   # func_regile
     func_iDPfile
-    func_secrets
+    #func_secrets
     #Exclude folders from realtime scanning
-    func_AntiVirus
+    #func_AntiVirus
     #Set paramaters for the Tableau Server version
     func_Version -Version $ts_build
     #Download Tableau server installation files
