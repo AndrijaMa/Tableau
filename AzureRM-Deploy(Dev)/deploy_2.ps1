@@ -21,6 +21,7 @@ Param(
     [string]$eula
 )
 
+#v1
 
 $folder = "C:\tab\"  
 $reg_file = "rg.json"
@@ -29,6 +30,7 @@ $log_file = "install.log"
 $event_file = "event.log"
 $bootstrapfile = "bootstrap.json"
 $ts_build | Out-File $folder+"version.txt"
+"hello" | Out-File $folder+"version1.txt"
 $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
@@ -40,7 +42,7 @@ $global:content_admin_pass = $ts_admin_pw
 $global:product_keys = $license_key
     
 
-#function func_regile{ 
+function func_regFile{ 
    ## 2. make registration.json
 #TODO: add parameter for accepting eula
    @{
@@ -60,7 +62,7 @@ $global:product_keys = $license_key
     }| ConvertTo-Json -depth 10 | Out-File $folder$reg_file -Encoding utf8
 #}
 
-function func_iDPfile{ 
+function func_configFile{ 
      @{
         configEntities = @{
             identityStore= @{
@@ -298,15 +300,15 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 
 function func_main(){
     func_createFolder
-   # func_regile
-    func_iDPfile
+    func_regFile
+    func_configFile
     #func_secrets
     #Exclude folders from realtime scanning
     #func_AntiVirus
     #Set paramaters for the Tableau Server version
     func_Version 
     #Download Tableau server installation files
-    func_Download  -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
+    func_Download  -folder $folder $log_file -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
     #Install Tableau server
     #func_Install -log_path $($folder+$log_file) -file_path $($folder+$global:DownloadFile)
     #Configure tableau server
