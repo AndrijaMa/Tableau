@@ -19,7 +19,7 @@ Param(
     [string]$local_admin_pass,
     [string]$ts_build,
     [string]$eula
-)  
+)    
 
 #v1
 
