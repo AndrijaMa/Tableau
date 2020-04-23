@@ -32,7 +32,7 @@ $event_file = "event.log"
 $bootstrapfile = "bootstrap.json"  
 
 $global:major = ''
-$global:minor = ''
+$global:minor = '' 
 $global:hotfix = ''
 $global:DownloadFile = ''
 $global:ts_build = ''
