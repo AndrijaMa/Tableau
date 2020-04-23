@@ -89,7 +89,7 @@ function func_Other{
         content_admin_pass = $ts_admin_pw
         product_keys = $license_key
         ts_build = $ts_build
-    } | ConvertTo-Json| Out-File $other -Encoding ASCII
+    } | ConvertTo-Json | % { [System.Text.RegularExpressions.Regex]::Unescape($_) }| Out-File $other 
 
     $global:ts_build = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object ts_build).ts_build
     $global:product_keys = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object product_keys).product_keys
