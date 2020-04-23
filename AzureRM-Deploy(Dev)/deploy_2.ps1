@@ -60,7 +60,7 @@ function func_regFile{
         country = $reg_country
         eula = "yes"
     }| ConvertTo-Json -depth 10 | Out-File $folder$reg_file -Encoding utf8
-#}
+}
 
 function func_configFile{ 
      @{
