@@ -150,12 +150,12 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
         }
         else
         { 
-            Write-ToLog -text "Downloading Tableau Server installation media ..." 
-            
+            Write-ToLog -text "Starting Tableau Server media download..." 
+
             #Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
             Start-BitsTransfer -Source $url -Destination $($folder+$DownloadFile) -TransferType Download -Priority High 
-            Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
-            Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
+            Write-ToLog -text "Tableau Server media download completed successfully"    
+           
         }
 
     }
