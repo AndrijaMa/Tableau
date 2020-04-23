@@ -40,7 +40,7 @@ $global:local_admin_pass = $local_admin_pass
 $global:content_admin_user = $ts_admin_un
 $global:content_admin_pass = $ts_admin_pw
 $global:product_keys = $license_key
-    
+$global:product_keys   | Out-File $folder+"version2.txt"
 
 function func_regFile{ 
    ## 2. make registration.json
