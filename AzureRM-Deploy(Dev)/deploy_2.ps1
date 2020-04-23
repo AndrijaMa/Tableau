@@ -67,7 +67,7 @@ function func_regFile{
         zip = $reg_zip
         country = $reg_country
         eula = "yes"
-    } | ConvertTo-Json | % { [System.Text.RegularExpressions.Regex]::Unescape($_) }  | Out-File $reg_file 
+    } | ConvertTo-Json | Out-File $reg_file 
 }
 
 function func_configFile{ 
@@ -89,10 +89,10 @@ function func_Other{
         content_admin_pass = $ts_admin_pw
         product_keys = $license_key
         ts_build = $ts_build
-    } | ConvertTo-Json | % { [System.Text.RegularExpressions.Regex]::Unescape($_) } | Out-File $other 
+    } | ConvertTo-Json | Out-File $other 
 
-    $global:ts_build = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object ts_build).ts_build.replace("'","")
-    $global:product_keys = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object product_keys).product_keys.replace("'","")
+    $global:ts_build = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object ts_build).ts_build
+    $global:product_keys = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object product_keys).product_keys
     
 }
 
@@ -151,7 +151,7 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
         else
         { 
             #Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
-            Start-BitsTransfer -Source $url -Destination $($folder+$DownloadFile)
+            Start-BitsTransfer -Source $url -Destination $($folder+$DownloadFile) -TransferType Download -Priority High 
             Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
             Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
         }
