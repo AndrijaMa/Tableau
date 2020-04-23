@@ -17,10 +17,11 @@ Param(
     [string]$install_script_url,
     [string]$local_admin_user,
     [string]$local_admin_pass,
+    [string]$ts_build,
     [string]$eula
 )
 
-$folder = "C:\tab\" 
+$folder = "C:\tab\"  
 $reg_file = "rg.json"
 $iDP_config = "cf.json"
 $log_file = "install.log"
@@ -31,6 +32,7 @@ $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
 $global:DownloadFile = ''
+
 function func_secrets{
     
         $global:local_admin_user = $local_admin_user
@@ -57,7 +59,7 @@ function func_regile{
         zip = $reg_zip
         country = $reg_country
         eula = "yes"
-    }| ConvertTo-Json -depth 10 | Out-File $global:folder$reg_file -Encoding ASCII
+    }| ConvertTo-Json -depth 10 | Out-File $global:folder$reg_file -Encoding unicode
 }
 
 function func_iDPfile{ 
@@ -68,7 +70,6 @@ function func_iDPfile{
                 type= "local"
             }
         }
-        topologyVersion = @{}
     }| ConvertTo-Json -depth 20 | Out-File $global:folder$iDP_config -Encoding ASCII
       
 }
@@ -306,7 +307,7 @@ function func_main(){
     #Exclude folders from realtime scanning
     func_AntiVirus
     #Set paramaters for the Tableau Server version
-    func_Version -Version $Version
+    func_Version -Version $ts_build
     #Download Tableau server installation files
     func_Download  -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
     #Install Tableau server
