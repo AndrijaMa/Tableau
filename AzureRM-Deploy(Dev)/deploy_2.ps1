@@ -26,26 +26,19 @@ Param(
 $folder = "C:\tab\"  
 $reg_file = "rg.json"
 $iDP_config = "cf.json"
+$other = "other.json"
 $log_file = "install.log"
 $event_file = "event.log"
 $bootstrapfile = "bootstrap.json"
-$ts_build | Out-File $folder+"version.txt"
-"hello" | Out-File $folder"version1.txt"
-$reg_zip| Out-File $folder"version3.txt"
+
 $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
 $global:DownloadFile = ''
-$global:local_admin_user = $local_admin_user
-$global:local_admin_pass = $local_admin_pass
-$global:content_admin_user = $ts_admin_un
-$global:content_admin_pass = $ts_admin_pw
-$global:product_keys = $license_key
-$global:product_keys 
 
 function func_regFile{ 
-   ## 2. make registration.json
-#TODO: add parameter for accepting eula
+        ## 2. make registration.json
+        #TODO: add parameter for accepting eula
    @{
         first_name = $reg_first_name
         last_name = $reg_last_name
@@ -60,10 +53,23 @@ function func_regFile{
         zip = $reg_zip
         country = $reg_country
         eula = "yes"
-        license = $license_key
-        ts_build = $ts_build
-    }| ConvertTo-Json | Out-File $folder$reg_file -Encoding ASCII
+    } | ConvertTo-Json | Out-File $folder$reg_file -Encoding ASCII
 }
+
+function func_Other{
+    @{
+        local_admin_user = $local_admin_user
+        local_admin_pass = $local_admin_pass
+        content_admin_user = $ts_admin_un
+        content_admin_pass = $ts_admin_pw
+        product_keys = $license_key
+        ts_build = $ts_build
+    } | ConvertTo-Json| Out-File $global:folder$other -Encoding ASCII
+
+    $ts_build = $(Get-Content -raw $global:folder$other  | ConvertFrom-Json | Select-Object ts_build).ts_build
+}
+
+
 
 function func_configFile{ 
      @{
@@ -73,36 +79,36 @@ function func_configFile{
                 type= "local"
             }
         }
-    }| ConvertTo-Json| Out-File $global:folder$iDP_config -Encoding ASCII
+    } | ConvertTo-Json| Out-File $global:folder$iDP_config -Encoding ASCII
       
 }
-function func_Version {
+function func_Version ($version) {
    
-    if(!$ts_build)
+    if(!$Version)
     {
-        Write-ToLog -text  "-Version is missing a value. It should be in the format xxxx.x.x like for example 2019.1.4 or type Trial to active a 14 day trial"
+        Write-Host "-Version is missing a value. It should be in the format xxxx.x.x like for example 2019.1.4 or type Trial to active a 14 day trial"
     }
-    elseif($ts_build.ToString().Length -ne 8)
+    elseif($version.ToString().Length -ne 8)
     {
-        Write-ToLog -text "-Version is in the wrong format. It should be in the format xxxx.x.x like for example 2019.1.4"
+        Write-Host "-Version is in the wrong format. It should be in the format xxxx.x.x like for example 2019.1.4"
         
     }
 
-    elseif($ts_build.ToString().Length -eq 8)
+    elseif($version.ToString().Length -eq 8)
             {
-            if ($ts_build -like '*.*')
+            if ($version -like '*.*')
             {
-                $global:major = $ts_build.substring(0,4)
-                $global:minor = $ts_build.substring(0,$version.lastindexof('.')).substring(5)
-                $global:hotfix = $ts_build.substring($version.length-1)
+                $global:major = $version.substring(0,4)
+                $global:minor = $version.substring(0,$version.lastindexof('.')).substring(5)
+                $global:hotfix = $version.substring($version.length-1)
                 
             }
             elseif ($version -like '*-*')
             {
-                $ts_build = $ts_build.ToString().replace('-','.') 
-                $global:major = $ts_build.substring(0,4)
-                $global:minor = $ts_build.substring(0,$version.lastindexof('.')).substring(5)
-                $global:hotfix = $ts_build.substring($version.length-1)
+                $version = $version.ToString().replace('-','.') 
+                $global:major = $version.substring(0,4)
+                $global:minor = $version.substring(0,$version.lastindexof('.')).substring(5)
+                $global:hotfix = $version.substring($version.length-1)
                 
             }
         }
@@ -330,11 +336,12 @@ function func_main(){
     func_createFolder
     func_regFile
     func_configFile
+    func_Other
     #func_secrets
     #Exclude folders from realtime scanning
     #func_AntiVirus
     #Set paramaters for the Tableau Server version
-    #func_Version 
+    func_Version -version $ts_build
     #Download Tableau server installation files
     func_Download  -folder $folder $log_file -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
     #Install Tableau server
