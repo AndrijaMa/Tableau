@@ -92,7 +92,7 @@ function func_Other{
     } | ConvertTo-Json | % { [System.Text.RegularExpressions.Regex]::Unescape($_) } | Out-File $other 
 
     $global:ts_build = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object ts_build).ts_build.replace("'","")
-    $global:product_keys = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object product_keys).product_keys
+    $global:product_keys = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object product_keys).product_keys.replace("'","")
     
 }
 
@@ -311,7 +311,7 @@ function func_main(){
     #Download Tableau server installation files
     func_Download  -folder $folder $log_file -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
     #Install Tableau server
-    #func_Install -log_path $log_file -file_path $($folder+$global:DownloadFile)
+    func_Install -log_path $log_file -file_path $($folder+$global:DownloadFile)
     #Configure tableau server
     #func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -LicenseKey $global:product_keys
     #func_AntiVirus
