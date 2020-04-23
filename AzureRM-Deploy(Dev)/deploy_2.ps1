@@ -66,7 +66,7 @@ function func_regFile{
         state = $reg_state
         zip = $reg_zip
         country = $reg_country
-        eula = "yes"
+        eula = $eula
     } | ConvertTo-Json | Out-File $reg_file 
 }
 
@@ -316,7 +316,7 @@ function func_main(){
     #Install Tableau server
     func_Install -log_path $log_file -file_path $($folder+$global:DownloadFile)
     #Configure tableau server
-    #func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -LicenseKey $global:product_keys
+    func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -LicenseKey $global:product_keys
     #func_AntiVirus
 }
 
