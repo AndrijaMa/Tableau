@@ -31,6 +31,7 @@ $event_file = "event.log"
 $bootstrapfile = "bootstrap.json"
 $ts_build | Out-File $folder+"version.txt"
 "hello" | Out-File $folder"version1.txt"
+$reg_zip| Out-File $folder"version3.txt"
 $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
