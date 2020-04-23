@@ -145,11 +145,13 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
         #Download the server installation file
         if(Test-Path $($folder+$global:DownloadFile))
         {
-            Write-ToLog -text "Downloading Tableau Server installation media download..." 
+           
             Write-ToLog -text  $($folder+$DownloadFile) ' exists'
         }
         else
         { 
+            Write-ToLog -text "Downloading Tableau Server installation media ..." 
+            
             #Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
             Start-BitsTransfer -Source $url -Destination $($folder+$DownloadFile) -TransferType Download -Priority High 
             Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
