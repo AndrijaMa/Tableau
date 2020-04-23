@@ -35,6 +35,7 @@ $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
 $global:DownloadFile = ''
+$global:ts_build = ''
 
 function func_regFile{ 
         ## 2. make registration.json
@@ -66,7 +67,9 @@ function func_Other{
         ts_build = $ts_build
     } | ConvertTo-Json| Out-File $global:folder$other -Encoding ASCII
 
-    $ts_build = $(Get-Content -raw $global:folder$other  | ConvertFrom-Json | Select-Object ts_build).ts_build
+    $global:ts_build = $(Get-Content -raw $global:folder$other  | ConvertFrom-Json | Select-Object ts_build).ts_build
+    $global:product_keys = $(Get-Content -raw $global:folder$other  | ConvertFrom-Json | Select-Object product_keys).product_keys
+    
 }
 
 
@@ -341,7 +344,7 @@ function func_main(){
     #Exclude folders from realtime scanning
     #func_AntiVirus
     #Set paramaters for the Tableau Server version
-    func_Version -version $ts_build
+    func_Version -version $global:ts_build
     #Download Tableau server installation files
     func_Download  -folder $folder $log_file -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
     #Install Tableau server
