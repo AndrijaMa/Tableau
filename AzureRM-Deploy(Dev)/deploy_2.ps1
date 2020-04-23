@@ -24,11 +24,11 @@ Param(
 #v1
 
 $folder = "C:\tab\"  
-$reg_file = "rg.json"
-$iDP_config = "cf.json"
-$other = "other.json"
-$log_file = "install.log"
-$event_file = "event.log"
+$reg_file = $folder+"rg.json"
+$iDP_config = $folder+"cf.json"
+$other = $folder+"other.json"
+$log_file = $folder+"install.log"
+$event_file = $event_file+"event.log"
 $bootstrapfile = "bootstrap.json"  
 
 $global:major = ''
@@ -37,6 +37,19 @@ $global:hotfix = ''
 $global:DownloadFile = ''
 $global:ts_build = ''
  
+function func_createFolder{
+                                                   
+    if(Test-Path $folder)
+    {
+        Write-ToLog -text  "'The ' $folder 'folder already exists'"
+    }
+    else
+        {
+            New-Item -Path $folder -ItemType Directory
+            Write-ToLog -text  'Created folder ' $folder
+        }
+}
+
 function func_regFile{ 
         ## 2. make registration.json
         #TODO: add parameter for accepting eula
@@ -54,9 +67,20 @@ function func_regFile{
         zip = $reg_zip
         country = $reg_country
         eula = "yes"
-    } | ConvertTo-Json | Out-File $folder$reg_file -Encoding ASCII
+    } | ConvertTo-Json | Out-File $reg_file -Encoding ASCII
 }
 
+function func_configFile{ 
+    @{
+       configEntities = @{
+           identityStore= @{
+               _type= "identityStoreType"
+               type= "local"
+           }
+       }
+   } | ConvertTo-Json| Out-File $iDP_config -Encoding ASCII
+     
+}
 function func_Other{
     @{
         local_admin_user = $local_admin_user
@@ -65,25 +89,19 @@ function func_Other{
         content_admin_pass = $ts_admin_pw
         product_keys = $license_key
         ts_build = $ts_build
-    } | ConvertTo-Json| Out-File $global:folder$other -Encoding ASCII
+    } | ConvertTo-Json| Out-File $other -Encoding ASCII
 
-    $global:ts_build = $(Get-Content -raw $global:folder$other  | ConvertFrom-Json | Select-Object ts_build).ts_build
-    $global:product_keys = $(Get-Content -raw $global:folder$other  | ConvertFrom-Json | Select-Object product_keys).product_keys
+    $global:ts_build = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object ts_build).ts_build
+    $global:product_keys = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object product_keys).product_keys
     
 }
 
+function Write-ToLog ($text) {
+    
+    $message = "[{0:yyyy/MM/dd/} {0:HH:mm:ss}]" -f (Get-Date) +", "+ $text 
+    Write-Host  $message
+    Write-Output $message | Out-file $event_file -Append -Encoding default
 
-
-function func_configFile{ 
-     @{
-        configEntities = @{
-            identityStore= @{
-                _type= "identityStoreType"
-                type= "local"
-            }
-        }
-    } | ConvertTo-Json| Out-File $global:folder$iDP_config -Encoding ASCII
-      
 }
 function func_Version ($version) {
    
@@ -117,59 +135,11 @@ function func_Version ($version) {
         }
         #return $global:major, $global:minor, $global:hotfix
 }
-
-
-function func_createFolder{
-                                                   
-                            if(Test-Path $folder)
-                            {
-                                Write-ToLog -text  "'The ' $folder 'folder already exists'"
-                            }
-                            else
-                                {
-                                    New-Item -Path $folder -ItemType Directory
-                                    Write-ToLog -text  'Created folder ' $folder
-                                }
-}
-function Write-ToLog ($text) {
-    
-    $message = "[{0:yyyy/MM/dd/} {0:HH:mm:ss}]" -f (Get-Date) +", "+ $text 
-    Write-Host  $message
-    Write-Output $message | Out-file $folder$event_file -Append -Encoding default
-
-}
-
-# function func_Download($folder, $log_file, $event_file,$version_major, $version_minor, $version_hotfix){
-    
-#     try{#Set the path  to the server version of Tableau that you want to download
-#         $global:DownloadFile = "TableauServer-64bit-"+$version_major+"-"+$version_minor+"-"+$version_hotfix+".exe"
-#         $url = "https://downloads.tableau.com/esdalt/"+$version_major+"."+$version_minor+"."+$version_hotfix+"/"+$DownloadFile
-
-#         Write-ToLog -text $url
-#         #Download the server installation file
-#         if(Test-Path $($folder+$global:DownloadFile))
-#         {
-#             Write-ToLog -text "Downloading Tableau Server installation media download..." 
-#             Write-ToLog -text  $($folder+$DownloadFile) ' exists'
-#         }
-#         else
-#         { 
-#             Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
-#             Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
-#             Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
-#         }
-
-#     }
-#     catch
-#         {
-#             Write-ToLog -text $PSItem.Exception.Message
-#         }
-# }
 function func_Download($folder, $log_file, $event_file,$version_major, $version_minor, $version_hotfix){
     
     try{#Set the path  to the server version of Tableau that you want to download
-        $global:DownloadFile = "TableauServer-64bit-2020-1-2.exe"
-        $url = "https://downloads.tableau.com/esdalt/2020.1.2/TableauServer-64bit-2020-1-2.exe"
+        $global:DownloadFile = "TableauServer-64bit-"+$version_major+"-"+$version_minor+"-"+$version_hotfix+".exe"
+        $url = "https://downloads.tableau.com/esdalt/"+$version_major+"."+$version_minor+"."+$version_hotfix+"/"+$DownloadFile
 
         Write-ToLog -text $url
         #Download the server installation file
@@ -191,14 +161,11 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
             Write-ToLog -text $PSItem.Exception.Message
         }
 }
+
 function func_Install($file_path, $log_path)
 {
     
         try {
-
-                #Install Switches and Properties for Tableau Server
-                #https://help.tableau.com/current/server/en-us/silent_installer_flags.htm
-                #Start silent Tableau server installation
 
                 if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $false)
                 {
@@ -234,21 +201,18 @@ function func_Install($file_path, $log_path)
                         $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"\Packages")
                     }
                     
-                    
                     $bin = (Get-ItemProperty ($packages+"\bin.*") | Select-Object Name).Name
                     $global:tsm_path = $packages+"\"+$bin+"\";
                     #Add TSM to Windows Path
 
                     $Env:path += $global:tsm_path
-
-
                 }
 
                 #Generate bootstrap file
                 if($Bootstrap -eq $true)
                 {
                     Write-ToLog -text  "Creating bootstrap file in " $folder
-                    Invoke-Expression "tsm topology nodes get-bootstrap-file --file '$($folder+$bootstrapfile)'"
+                    Invoke-Expression "tsm topology nodes get-bootstrap-file --file '$bootstrapfile'"
                 }
         }
         catch
@@ -256,25 +220,7 @@ function func_Install($file_path, $log_path)
                 Write-ToLog -text $PSItem.Exception.Message
             }
 }
-
-function func_AntiVirus(){
-        #Disable antivirus scan for the folder that is being used during the installation
-        Write-ToLog -text "Adding C:\Downloads to AV Exlusion"
-        Add-MpPreference -ExclusionPath $folder
-
-        if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $true){
-            $ts_install = (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application
-            Write-ToLog -text $ts_install
-
-            $ts_data =  (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Data).Data   
-            Write-ToLog -text $ts_data 
-            
-            Add-MpPreference -ExclusionPath $ts_install 
-            Write-ToLog -text "Added Tableau server install folder to AntiVirus Exlusions"
-            Add-MpPreference -ExclusionPath $ts_data 
-            Write-ToLog -text "Added Tableau server data folder to AntiVirus Exlusions"
-        }
-        }   
+ 
 function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file, $license_key)
 {
                                 
@@ -334,7 +280,24 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog -text $PSItem.Exception.Message
             }
 }
+function func_AntiVirus(){
+    #Disable antivirus scan for the folder that is being used during the installation
+    Write-ToLog -text "Adding C:\Downloads to AV Exlusion"
+    Add-MpPreference -ExclusionPath $folder
 
+    if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $true){
+        $ts_install = (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application
+        Write-ToLog -text $ts_install
+
+        $ts_data =  (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Data).Data   
+        Write-ToLog -text $ts_data 
+        
+        Add-MpPreference -ExclusionPath $ts_install 
+        Write-ToLog -text "Added Tableau server install folder to AntiVirus Exlusions"
+        Add-MpPreference -ExclusionPath $ts_data 
+        Write-ToLog -text "Added Tableau server data folder to AntiVirus Exlusions"
+    }
+}  
 function func_main(){
     func_createFolder
     func_regFile
@@ -348,9 +311,9 @@ function func_main(){
     #Download Tableau server installation files
     func_Download  -folder $folder $log_file -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
     #Install Tableau server
-    #func_Install -log_path $($folder+$log_file) -file_path $($folder+$global:DownloadFile)
+    #func_Install -log_path $log_file -file_path $($folder+$global:DownloadFile)
     #Configure tableau server
-    #func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -LicenseKey $LicenseKey
+    #func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -LicenseKey $global:product_keys
     #func_AntiVirus
 }
 
