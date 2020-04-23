@@ -67,7 +67,7 @@ function func_regFile{
         zip = $reg_zip
         country = $reg_country
         eula = "yes"
-    } | ConvertTo-Json | Out-File $reg_file -Encoding ASCII
+    } | ConvertTo-Json | % { [System.Text.RegularExpressions.Regex]::Unescape($_) }  | Out-File $reg_file 
 }
 
 function func_configFile{ 
@@ -78,7 +78,7 @@ function func_configFile{
                type= "local"
            }
        }
-   } | ConvertTo-Json| Out-File $iDP_config -Encoding ASCII
+   } | ConvertTo-Json| Out-File $iDP_config 
      
 }
 function func_Other{
