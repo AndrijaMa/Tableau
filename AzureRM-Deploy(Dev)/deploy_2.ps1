@@ -28,7 +28,7 @@ $iDP_config = "cf.json"
 $log_file = "install.log"
 $event_file = "event.log"
 $bootstrapfile = "bootstrap.json"
-$ts_build | Out-File $folder"version.txt"
+$ts_build | Out-File $folder+"version.txt"
 $global:major = ''
 $global:minor = ''
 $global:hotfix = ''
@@ -57,7 +57,7 @@ $global:product_keys = $license_key
         zip = $reg_zip
         country = $reg_country
         eula = "yes"
-    }| ConvertTo-Json -depth 10 | Out-File $global:folder$reg_file -Encoding unicode
+    }| ConvertTo-Json -depth 10 | Out-File $folder$reg_file -Encoding utf8
 #}
 
 function func_iDPfile{ 
@@ -71,33 +71,33 @@ function func_iDPfile{
     }| ConvertTo-Json -depth 20 | Out-File $global:folder$iDP_config -Encoding ASCII
       
 }
-function func_Version ($version) {
+function func_Version {
    
-    if(!$Version)
+    if(!$ts_build)
     {
         Write-ToLog -text  "-Version is missing a value. It should be in the format xxxx.x.x like for example 2019.1.4 or type Trial to active a 14 day trial"
     }
-    elseif($version.ToString().Length -ne 8)
+    elseif($ts_build.ToString().Length -ne 8)
     {
         Write-ToLog -text "-Version is in the wrong format. It should be in the format xxxx.x.x like for example 2019.1.4"
         
     }
 
-    elseif($version.ToString().Length -eq 8)
+    elseif($ts_build.ToString().Length -eq 8)
             {
-            if ($version -like '*.*')
+            if ($ts_build -like '*.*')
             {
-                $global:major = $version.substring(0,4)
-                $global:minor = $version.substring(0,$version.lastindexof('.')).substring(5)
-                $global:hotfix = $version.substring($version.length-1)
+                $global:major = $ts_build.substring(0,4)
+                $global:minor = $ts_build.substring(0,$version.lastindexof('.')).substring(5)
+                $global:hotfix = $ts_build.substring($version.length-1)
                 
             }
             elseif ($version -like '*-*')
             {
-                $version = $version.ToString().replace('-','.') 
-                $global:major = $version.substring(0,4)
-                $global:minor = $version.substring(0,$version.lastindexof('.')).substring(5)
-                $global:hotfix = $version.substring($version.length-1)
+                $ts_build = $ts_build.ToString().replace('-','.') 
+                $global:major = $ts_build.substring(0,4)
+                $global:minor = $ts_build.substring(0,$version.lastindexof('.')).substring(5)
+                $global:hotfix = $ts_build.substring($version.length-1)
                 
             }
         }
@@ -139,8 +139,7 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
             Write-ToLog -text  $($folder+$DownloadFile) ' exists'
         }
         else
-        {
-            
+        { 
             Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
             Write-ToLog -text "Download of Tableau Server installation media completed successfully"    
             Write-ToLog -text "The download is" (Get-Item $($folder+$DownloadFile)).length/1GB " GB and the download took " 
@@ -305,7 +304,7 @@ function func_main(){
     #Exclude folders from realtime scanning
     #func_AntiVirus
     #Set paramaters for the Tableau Server version
-    func_Version -Version $ts_build
+    func_Version 
     #Download Tableau server installation files
     func_Download  -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -version_major $global:major -version_minor $global:minor -version_hotfix $global:hotfix
     #Install Tableau server
