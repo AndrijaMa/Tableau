@@ -35,7 +35,7 @@ $global:major = ''
 $global:minor = '' 
 $global:hotfix = ''
 $global:DownloadFile = ''
-$global:ts_build = ''
+
  
 function func_createFolder{
                                                    
