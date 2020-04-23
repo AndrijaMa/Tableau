@@ -41,7 +41,7 @@ $global:local_admin_pass = $local_admin_pass
 $global:content_admin_user = $ts_admin_un
 $global:content_admin_pass = $ts_admin_pw
 $global:product_keys = $license_key
-$global:product_keys   | Out-File $folder+"version2.txt"
+$global:product_keys 
 
 function func_regFile{ 
    ## 2. make registration.json
@@ -60,7 +60,9 @@ function func_regFile{
         zip = $reg_zip
         country = $reg_country
         eula = "yes"
-    }| ConvertTo-Json -depth 10 | Out-File $folder$reg_file -Encoding utf8
+        license = $license_key
+        ts_build = $ts_build
+    }| ConvertTo-Json | Out-File $folder$reg_file -Encoding ASCII
 }
 
 function func_configFile{ 
@@ -71,7 +73,7 @@ function func_configFile{
                 type= "local"
             }
         }
-    }| ConvertTo-Json -depth 20 | Out-File $global:folder$iDP_config -Encoding ASCII
+    }| ConvertTo-Json| Out-File $global:folder$iDP_config -Encoding ASCII
       
 }
 function func_Version {
