@@ -305,8 +305,7 @@ function func_main(){
     func_configFile
     func_Other
     
-    #Exclude folders from realtime scanning
-    #func_AntiVirus
+
     #Set paramaters for the Tableau Server version
     func_Version -version $global:ts_build
     #Download Tableau server installation files

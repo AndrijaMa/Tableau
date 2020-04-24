@@ -243,13 +243,14 @@
     "subnet1Name": "Subnet-1",
     "subnet1Prefix": "10.0.0.0/24",
     "numberOfInstances": 1,
-    "fileUris": "https://raw.githubusercontent.com/AndrijaMa/TestX/master/AzureRM-Deploy/deploy.ps1",
-   
+    "scripthome": "https://raw.githubusercontent.com/AndrijaMa/TestX/master/AzureRM-Deploy/",
+    "scriptfile":"deploy.ps1",
+    "fileUris": "[concat(variables('scripthome'), variables('scriptfile'))]",
     "virtualMachineSize": "[parameters('VMSize')]",
     
     "publicIpName": "[substring(concat(uniqueString(resourceGroup().id, deployment().name)), 0, 6)]",
     "WinMainExecute" : "[concat('-local_admin_user ', parameters('adminUsername'), ' -local_admin_pass ', parameters('adminPassword'), ' -ts_admin_un ', parameters('adminUsername'), ' -ts_admin_pass ', parameters('adminPassword'), ' -reg_zip ', parameters('registration_zip'), ' -reg_country ', parameters('registration_country'), ' -reg_city ', parameters('registration_city'), ' -reg_last_name ', parameters('registration_last_name'), ' -reg_industry ', parameters('registration_industry'), ' -eula ', parameters('accept_eula') ,' -reg_title ', parameters('registration_title'),' -reg_phone ', parameters('registration_phone'),' -reg_company ', parameters('registration_company'), ' -reg_state ', parameters('registration_state'), ' -reg_email ', parameters('registration_email'), ' -reg_department ', parameters('registration_department'), ' -install_script_url ', variables('fileUris'), ' -license_key ', parameters('license_key'), ' -reg_first_name ', parameters('registration_first_name'), ' -ts_build ', parameters('Tableau_build'), '')]",
-    "WinMainWrapper" : "[concat('powershell -ExecutionPolicy Unrestricted -File deploy.ps1 ', variables('WinMainExecute'))]",
+    "WinMainWrapper" : "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptfile'), ' ', variables('WinMainExecute'))]",
     "WindowssecurityRules": [
       {
         "name": "ssh-rule",
