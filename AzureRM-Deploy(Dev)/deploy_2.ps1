@@ -194,14 +194,15 @@ function func_Install($file_path, $log_path)
                 #Check if Tableau is installed on the Server
                 if((Test-Path HKLM:\SOFTWARE\Tableau\) -eq $true)
                 {
+                    $reg_path = "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories"
                     #Get the AppVersion Property from the registry that contains the path to the 
-                    if ( (Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application -eq '\$')
+                    if ( (Get-Item $reg_path | Get-ItemProperty | Select-Object Application).Application -eq '\$')
                     {
-                        $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"Packages")
+                        $packages =  ((Get-Item $reg_path | Get-ItemProperty | Select-Object Application).Application+"Packages")
                     }
                     else
                     {
-                        $packages =  ((Get-Item "HKLM:\SOFTWARE\Tableau\Tableau Server *\Directories" | Get-ItemProperty | Select-Object Application).Application+"\Packages")
+                        $packages =  ((Get-Item $reg_path | Get-ItemProperty | Select-Object Application).Application+"\Packages")
                     }
                     
                     $bin = (Get-ItemProperty ($packages+"\bin.*") | Select-Object Name).Name
@@ -232,31 +233,32 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 $tsm = $global:tsm_path +"tsm.cmd"
                 Write-ToLog $tsm
                 #Activate Tableau Server license
-                Write-ToLog -text  "Registering Tableau Server License"
+                Write-ToLog -text  "Tableau Server License activation started"
 
-                if($license_key.ToLower() -eq 'trial'){
+                #Activate Tableau server 14 day trial 
+                if($license_key.ToLower() -eq 'trial' -or $license_key -eq ''){
                     
                     Start-Process $tsm -ArgumentList " licenses activate -t" -Wait
-                    Write-ToLog -text "Completed Tableau Server trial license activation"
+                    Write-ToLog -text "Tableau Server 14 day Trial activated"
                 }
+                #Activate Tableau server 
                 elseif($license_key -match '^[0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}$'){
                     
                     Start-Process $tsm -ArgumentList " licenses activate -k $license_key" -Wait
-                    Write-ToLog -text "Completed Tableau Server license activation"
+                    Write-ToLog -text "Tableau Server License activation completed successfully"
                 }
                
                 
                 #Register Tableau Server
-                $reg_file = $($folder+$reg_file)
+                
                 Write-ToLog -text "Starting Tableau Server registration"
                 Start-Process $tsm -ArgumentList " register --file $reg_file" -Wait
                
                 Write-ToLog -text "Completed Tableau Server registration"
 
                 #Set local repository
-                $iDP_file = $($folder+$iDP_config)
                 Write-ToLog -text "Starting Tableau Server local Repository setup"
-                Start-Process $tsm -ArgumentList " settings import -f $iDP_file" -Wait
+                Start-Process $tsm -ArgumentList " settings import -f $iDP_config" -Wait
                 #Invoke-Expression "tsm settings import -f '$iDP_file'"
                 Write-ToLog -text "Completed Tableau Server local Repository setup"
 
