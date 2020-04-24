@@ -46,7 +46,7 @@ function func_createFolder{
     else
         {
             New-Item -Path $folder -ItemType Directory
-            Write-ToLog -text  'Created folder ' $folder
+            Write-ToLog -text  "Created folder $folder"
         }
 }
 
@@ -144,8 +144,7 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
         Write-ToLog -text $url
         #Download the server installation file
         if(Test-Path $($folder+$global:DownloadFile))
-        {
-           
+        {    
             Write-ToLog -text  $($folder+$DownloadFile) ' exists'
         }
         else
@@ -153,6 +152,7 @@ function func_Download($folder, $log_file, $event_file,$version_major, $version_
             Write-ToLog -text "Starting Tableau Server media download..." 
 
             #Invoke-WebRequest -Uri $url -OutFile $($folder+$DownloadFile)
+            Write-ToLog -text "Start-BitsTransfer -Source $url -Destination $($folder+$DownloadFile) -TransferType Download -Priority High"  
             Start-BitsTransfer -Source $url -Destination $($folder+$DownloadFile) -TransferType Download -Priority High 
             Write-ToLog -text "Tableau Server media download completed successfully"    
            
@@ -174,17 +174,20 @@ function func_Install($file_path, $log_path)
                 {
                     Write-ToLog -text  "Starting Tableau Server installation"
                     if($global:major -le 2019 -and $global:minor -lt 4 -or $global:major -le 2018 ){
+                        Write-Host -text "$file_path /install /silent /ACCEPTEULA = 1 /LOG $log_path"   
+                        
                         Start-Process -FilePath $file_path -ArgumentList " /install /silent /ACCEPTEULA = 1 /LOG '$log_path'" -Verb RunAs -Wait
                     }
                     elseif ($global:major -ge 2019 -and $global:minor -eq 4 -or $global:major -ge 2020) {
-                        Start-Process -FilePath $file_path -ArgumentList " /install /passive ACCEPTEULA=1" -Verb RunAs -Wait
+                        Write-ToLog -text "$file_path /install /passive ACCEPTEULA=1"
+                        Start-Process -FilePath $file_path -ArgumentList " /install /passive ACCEPTEULA=1" -Verb RunAs -Wait  
                     }
 
-                    Write-ToLog -text  "Tableau Server installation completed successfully"
+                    Write-ToLog -text "Tableau Server installation completed successfully"
                 }
                 else
                 {
-                    Write-ToLog -text  'Tableau server is already installed'
+                    Write-ToLog -text 'Tableau server is already installed'
                 }
 
                 #Identifying path to TSM
@@ -204,7 +207,7 @@ function func_Install($file_path, $log_path)
                     {
                         $packages =  ((Get-Item $reg_path | Get-ItemProperty | Select-Object Application).Application+"\Packages")
                     }
-                    
+                    Write-ToLog -text "$packages"
                     $bin = (Get-ItemProperty ($packages+"\bin.*") | Select-Object Name).Name
                     $global:tsm_path = $packages+"\"+$bin+"\";
                     #Add TSM to Windows Path
@@ -215,7 +218,7 @@ function func_Install($file_path, $log_path)
                 #Generate bootstrap file
                 if($Bootstrap -eq $true)
                 {
-                    Write-ToLog -text  "Creating bootstrap file in " $folder
+                    Write-ToLog -text  "Creating bootstrap file in $folder"
                     Invoke-Expression "tsm topology nodes get-bootstrap-file --file '$bootstrapfile'"
                 }
         }
@@ -237,13 +240,13 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 
                 #Activate Tableau server 14 day trial 
                 if($license_key.ToLower() -eq 'trial' -or $license_key -eq ''){
-                    
+                    Write-ToLog -text  "$tsm licenses activate -t"
                     Start-Process $tsm -ArgumentList " licenses activate -t" -Wait
                     Write-ToLog -text "Tableau Server 14 day Trial activated"
                 }
                 #Activate Tableau server 
                 elseif($license_key -match '^[0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}[-][0-9A-Za-z]{4}$'){
-                    
+                    Write-ToLog -text  "$tsm licenses activate -k $license_key"
                     Start-Process $tsm -ArgumentList " licenses activate -k $license_key" -Wait
                     Write-ToLog -text "Tableau Server License activation completed successfully"
                 }
@@ -252,30 +255,33 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 #Register Tableau Server
                 
                 Write-ToLog -text "Starting Tableau Server registration"
+                Write-ToLog "$tsm register --file $reg_file"
                 Start-Process $tsm -ArgumentList " register --file $reg_file" -Wait
-               
                 Write-ToLog -text "Completed Tableau Server registration"
 
                 #Set local repository
                 Write-ToLog -text "Starting Tableau Server local Repository setup"
+                Write-ToLog -text "$tsm settings import -f $iDP_config"
                 Start-Process $tsm -ArgumentList " settings import -f $iDP_config" -Wait
-                #Invoke-Expression "tsm settings import -f '$iDP_file'"
                 Write-ToLog -text "Completed Tableau Server local Repository setup"
 
                 #Apply pending changes
                 Write-ToLog -text "Applying pending TSM changes"
+                Write-ToLog -text "$tsm pending-changes apply"
                 Start-Process $tsm -ArgumentList " pending-changes apply" -Wait
                 #Invoke-Expression "tsm pending-changes apply"
                 Write-ToLog -text "TSM changes applied successfully."
 
                 #Initialize configuration
                 Write-ToLog -text "Initializing Tableau Server"
+                Write-ToLog -text "$tsm initialize"
                 Start-Process $tsm -ArgumentList " initialize" -Wait
                 #Invoke-Expression "tsm initialize"
                 Write-ToLog -text "Tableau Server initialized"
 
                 #Initialize configuration
                 Write-ToLog -text "Starting Tableau Server"
+                Write-ToLog -text "$tsm start"
                 Start-Process $tsm -ArgumentList " start"  -Wait
                 #Invoke-Expression "tsm start"
                 Write-ToLog -text "Tableau Server started"
