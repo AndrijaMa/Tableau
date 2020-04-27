@@ -234,7 +234,7 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog -text  "Tableau Server License activation started"
 
                 #Activate Tableau server 14 day trial 
-                if($license_key.ToLower() -eq 'trial' -or $license_key -eq ''){
+                if($license_key.ToLower() -eq 'trial'){
                     Write-ToLog -text  "$tsm licenses activate -t"
                     Start-Process $tsm -ArgumentList " licenses activate -t" -Wait
                     Write-ToLog -text "Tableau Server 14 day Trial activated"
@@ -257,6 +257,16 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog -text "$tsm settings import -f $iDP_config"
                 Start-Process $tsm -ArgumentList " settings import -f $iDP_config" -Wait
                 Write-ToLog -text "Completed Tableau Server local Repository setup"
+
+                Write-ToLog -text "Setting Tableau Server Run As Service Account"
+                Write-ToLog -text "$tsm configuration set -k service.runas.password -v $ts_admin_un"
+                Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v " $ts_admin_un
+                Write-ToLog -text "Completed configuring Tableau Server Run As Service Account"
+
+                Write-ToLog -text "Setting Tableau Server Run As Service Account password"
+                Write-ToLog -text "$tsm configuration set -k service.runas.password -v $ts_admin_pw"
+                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v " $ts_admin_pw
+                Write-ToLog -text "Completed configuring Tableau Server Run As Service Account password"
 
                 #Apply pending changes
                 Write-ToLog -text "Applying pending TSM changes"
@@ -281,6 +291,10 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog -text $PSItem.Exception.Message
             }
 }
+
+function func_fw_Rules{
+                         New-NetFirewallRule -DisplayName "Open Inbound Port 80" -Direction Inbound -LocalPort 80 -Protocol TCP -Action Open
+}
 function func_AntiVirus(){
     #Disable antivirus scan for the folder that is being used during the installation
     Write-ToLog -text "Adding C:\Downloads to AV Exlusion"
@@ -299,12 +313,14 @@ function func_AntiVirus(){
         Write-ToLog -text "Added Tableau server data folder to AntiVirus Exlusions"
     }
 }  
+function func_cleanUp{
+    Remove-Item -Path $($folder+$DownloadFile) -Force
+}
 function func_main(){
     func_createFolder
     func_regFile
     func_configFile
     func_Other
-    
 
     #Set paramaters for the Tableau Server version
     func_Version -version $global:ts_build
@@ -315,6 +331,8 @@ function func_main(){
     #Configure tableau server
     func_Configure -folder $folder -reg_file $reg_file -iDP_config $iDP_config -log_file $log_file  -event_file $event_file -license_key $global:product_keys
     #func_AntiVirus
+    func_fw_Rules
+    func_cleanUp
 }
 
 func_main
