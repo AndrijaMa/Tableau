@@ -1,6 +1,6 @@
 Param(
     [string]$ts_admin_un,
-    [string]$ts_admin_pw,
+    [string]$ts_admin_pass,
     [string]$reg_first_name,
     [string]$reg_last_name,
     [string]$reg_email,
@@ -86,7 +86,7 @@ function func_Other{
         local_admin_user = $local_admin_user
         local_admin_pass = $local_admin_pass
         content_admin_user = $ts_admin_un
-        content_admin_pass = $ts_admin_pw
+        content_admin_pass = $ts_admin_pass
         product_keys = $license_key
         ts_build = $ts_build
     } | ConvertTo-Json | Out-File $other 
