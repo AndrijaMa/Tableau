@@ -260,14 +260,12 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog -text "Completed Tableau Server local Repository setup"
 
                 Write-ToLog -text "Setting Tableau Server Run As Service Account"
-                $user = "cloudadmin@"
-
-                if($user -match "[\\]" -or $user -match "@")
+                if($ts_admin_un -match "[\\]" -or $ts_admin_un -match "@")
                 {
                     Write-ToLog -text "$tsm configuration set -k service.runas.username -v $ts_admin_un"
                     Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v $ts_admin_un"  -Wait
                 }
-                elseif($user -notmatch "[\\]" -or $user -notmatch "@")
+                elseif($ts_admin_un -notmatch "[\\]" -or $ts_admin_un -notmatch "@")
                 {
                     Write-ToLog -text "$tsm configuration set -k service.runas.username -v .\$ts_admin_un"
                     Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v .\$ts_admin_un" -Wait
