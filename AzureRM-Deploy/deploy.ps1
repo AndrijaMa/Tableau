@@ -260,7 +260,7 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog -text "Completed Tableau Server local Repository setup"
 
                 Write-ToLog -text "Setting Tableau Server Run As Service Account"
-                if($ts_admin_un -match "[\\]" -or $ts_admin_un -match "@")
+                if($ts_admin_un -match "[\\]" -or $ts_admin_un -match "@") 
                 {
                     Write-ToLog -text "$tsm configuration set -k service.runas.username -v $ts_admin_un"
                     Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v $ts_admin_un"  -Wait
@@ -302,7 +302,8 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 }
 
 function func_fw_Rules{
-                         New-NetFirewallRule -DisplayName "Open Inbound Port 80" -Direction Inbound -LocalPort 80 -Protocol TCP -Action Open
+                        Write-ToLog -text "New-NetFirewallRule -DisplayName 'Open Inbound Port 80' -Direction Inbound -LocalPort 80 -Protocol TCP -Action Open"
+                        New-NetFirewallRule -DisplayName "Open Inbound Port 80" -Direction Inbound -LocalPort 80 -Protocol TCP -Action Open
 }
 function func_AntiVirus(){
     #Disable antivirus scan for the folder that is being used during the installation
@@ -323,6 +324,7 @@ function func_AntiVirus(){
     }
 }  
 function func_cleanUp{
+    Write-ToLog -text "Remove-Item -Path $($folder+$DownloadFile) -Force"
     Remove-Item -Path $($folder+$DownloadFile) -Force
 }
 function func_main(){
