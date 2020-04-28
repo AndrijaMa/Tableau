@@ -91,7 +91,7 @@ function func_Other{
         ts_build = $ts_build
     } | ConvertTo-Json | Out-File $other 
 
-    $global:content_admin_pass = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object content_admin_pass).content_admin_pass
+    
     $global:ts_build = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object ts_build).ts_build
     $global:product_keys = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object product_keys).product_keys
     
@@ -264,19 +264,19 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 
                 if($user -match "[\\]" -or $user -match "@")
                 {
-                    Write-ToLog -text "$tsm configuration set -k service.runas.username -v $ts_admin_un"
-                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v $ts_admin_un"  -Wait
+                    Write-ToLog -text "$tsm configuration set -k service.runas.username -v $local_admin_user"
+                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v $local_admin_user"  -Wait
                 }
                 elseif($user -notmatch "[\\]" -or $user -notmatch "@")
                 {
-                    Write-ToLog -text "$tsm configuration set -k service.runas.username -v .\$ts_admin_un"
-                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v .\$ts_admin_un" -Wait
+                    Write-ToLog -text "$tsm configuration set -k service.runas.username -v .\$local_admin_user"
+                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v .\$local_admin_user" -Wait
                 }
                 Write-ToLog -text "Completed configuring Tableau Server Run As Service Account"
 
                 Write-ToLog -text "Setting Tableau Server Run As Service Account password"
-                Write-ToLog -text "$tsm configuration set -k service.runas.password -v $global:content_admin_pass "
-                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v $global:content_admin_pass " -Wait
+                Write-ToLog -text "$tsm configuration set -k service.runas.password -v $local_admin_passs "
+                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v $local_admin_pass " -Wait
                 Write-ToLog -text "Completed configuring Tableau Server Run As Service Account password"    
 
                 #Apply pending changes
