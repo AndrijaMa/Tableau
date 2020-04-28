@@ -91,7 +91,8 @@ function func_Other{
         ts_build = $ts_build
     } | ConvertTo-Json | Out-File $other 
 
-    
+    $local_admin_user = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object local_admin_user).local_admin_user
+    $local_admin_pass = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object local_admin_pass).local_admin_pass
     $global:ts_build = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object ts_build).ts_build
     $global:product_keys = $(Get-Content -raw $other  | ConvertFrom-Json | Select-Object product_keys).product_keys
     
