@@ -264,17 +264,17 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 if($user -match "[\\]" -or $user -match "@")
                 {
                     Write-ToLog -text "$tsm configuration set -k service.runas.password -v .\$ts_admin_un"
-                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v $ts_admin_un" 
+                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v $ts_admin_un"  -Wait
                 }
                 elseif($user -notmatch "[\\]" -or $user -notmatch "@")
                 {
-                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v .\$ts_admin_un"
+                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v .\$ts_admin_un" -Wait
                 }
                 Write-ToLog -text "Completed configuring Tableau Server Run As Service Account"
 
                 Write-ToLog -text "Setting Tableau Server Run As Service Account password"
                 Write-ToLog -text "$tsm configuration set -k service.runas.password -v $ts_admin_pw"
-                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v $ts_admin_pw"
+                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v $ts_admin_pw" -Wait
                 Write-ToLog -text "Completed configuring Tableau Server Run As Service Account password"
 
                 #Apply pending changes
