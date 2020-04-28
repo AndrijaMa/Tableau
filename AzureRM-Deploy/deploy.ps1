@@ -274,7 +274,7 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 
                 Write-ToLog -text "Setting Tableau Server Run As Service Account password"
                 Write-ToLog -text "$tsm configuration set -k service.runas.password -v $ts_admin_pw"
-                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v " $ts_admin_pw
+                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v $ts_admin_pw"
                 Write-ToLog -text "Completed configuring Tableau Server Run As Service Account password"
 
                 #Apply pending changes
