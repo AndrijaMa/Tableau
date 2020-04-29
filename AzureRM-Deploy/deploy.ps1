@@ -288,7 +288,6 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog -text "Initializing Tableau Server"
                 Write-ToLog -text "$tsm initialize -r"
                 Start-Process $tsm -ArgumentList " initialize -r " -Wait
-                #Start-Process $tsm -ArgumentList " initialize" -Wait
                 Write-ToLog -text "Tableau Server initialized"
 
                 #Initialize configuration
