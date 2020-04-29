@@ -286,17 +286,17 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 
                 #Initialize configuration
                 Write-ToLog -text "Initializing Tableau Server"
-                Write-ToLog -text "$tsm initialize -r -u $ts_admin_un -p $ts_admin_pass -s https://localhost:8850"
-                Start-Process $tsm -ArgumentList " initialize -r -u $ts_admin_un -p $ts_admin_pass -s https://localhost:8850" -Wait
+                Write-ToLog -text "$tsm initialize -r"
+                Start-Process $tsm -ArgumentList " initialize -r " -Wait
                 #Start-Process $tsm -ArgumentList " initialize" -Wait
                 Write-ToLog -text "Tableau Server initialized"
 
                 #Initialize configuration
-                #Write-ToLog -text "Starting Tableau Server"
-                #Write-ToLog -text "$tsm start"
-                #Start-Process $tsm -ArgumentList " start"  -Wait
-                #Write-ToLog -text "Tableau Server started"
-            }
+                Write-ToLog -text "Adding initial Admin user"
+                Write-ToLog -text "$tabcmd initialuser -s http://localhost -u $ts_admin_un -p $ts_admin_pass"
+                Start-Process $tabcmd -ArgumentList " initialuser -s http://localhost -u $ts_admin_un -p $ts_admin_pass"  -Wait
+                Write-ToLog -text "Initial Admin user added"
+            } 
             catch
             {
                 Write-ToLog -text $PSItem.Exception.Message
