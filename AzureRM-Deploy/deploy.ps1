@@ -230,6 +230,7 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
             try{
                 
                 $tsm = $global:tsm_path +"tsm.cmd"
+                $tabcmd = $global:tsm_path +"tabcmd.exe"
                 Write-ToLog $tsm
                 #Activate Tableau Server license
                 Write-ToLog -text  "Tableau Server License activation started"
@@ -260,21 +261,21 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
                 Write-ToLog -text "Completed Tableau Server local Repository setup"
 
                 Write-ToLog -text "Setting Tableau Server Run As Service Account"
-                if($ts_admin_un -match "[\\]" -or $ts_admin_un -match "@") 
+                if($local_admin_user -match "[\\]" -or $local_admin_user -match "@") 
                 {
-                    Write-ToLog -text "$tsm configuration set -k service.runas.username -v $ts_admin_un"
-                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v $ts_admin_un"  -Wait
+                    Write-ToLog -text "$tsm configuration set -k service.runas.username -v $local_admin_user"
+                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v $local_admin_user"  -Wait
                 }
-                elseif($ts_admin_un -notmatch "[\\]" -or $ts_admin_un -notmatch "@")
+                elseif($local_admin_user -notmatch "[\\]" -or $local_admin_user -notmatch "@")
                 {
-                    Write-ToLog -text "$tsm configuration set -k service.runas.username -v .\$ts_admin_un"
-                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v .\$ts_admin_un" -Wait
+                    Write-ToLog -text "$tsm configuration set -k service.runas.username -v .\$local_admin_user"
+                    Start-Process $tsm -ArgumentList " configuration set -k service.runas.username -v .\$local_admin_user" -Wait
                 }
                 Write-ToLog -text "Completed configuring Tableau Server Run As Service Account"
 
                 Write-ToLog -text "Setting Tableau Server Run As Service Account password"
-                Write-ToLog -text "$tsm configuration set -k service.runas.password -v $ts_admin_pass "
-                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v $ts_admin_pass " -Wait
+                Write-ToLog -text "$tsm configuration set -k service.runas.password -v $local_admin_pass"
+                Start-Process $tsm -ArgumentList " configuration set -k service.runas.password -v $local_admin_pass" -Wait
                 Write-ToLog -text "Completed configuring Tableau Server Run As Service Account password"    
 
                 #Apply pending changes
@@ -285,15 +286,16 @@ function func_Configure($folder, $reg_file, $iDP_config, $log_file, $event_file,
 
                 #Initialize configuration
                 Write-ToLog -text "Initializing Tableau Server"
-                Write-ToLog -text "$tsm initialize"
-                Start-Process $tsm -ArgumentList " initialize" -Wait
+                Write-ToLog -text "$tsm initialize -r -u $ts_admin_un -p $ts_admin_pass -s https://localhost:8850"
+                Start-Process $tsm -ArgumentList " initialize -r -u $ts_admin_un -p $ts_admin_pass -s https://localhost:8850" -Wait
+                #Start-Process $tsm -ArgumentList " initialize" -Wait
                 Write-ToLog -text "Tableau Server initialized"
 
                 #Initialize configuration
-                Write-ToLog -text "Starting Tableau Server"
-                Write-ToLog -text "$tsm start"
-                Start-Process $tsm -ArgumentList " start"  -Wait
-                Write-ToLog -text "Tableau Server started"
+                #Write-ToLog -text "Starting Tableau Server"
+                #Write-ToLog -text "$tsm start"
+                #Start-Process $tsm -ArgumentList " start"  -Wait
+                #Write-ToLog -text "Tableau Server started"
             }
             catch
             {
