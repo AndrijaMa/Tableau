@@ -3,7 +3,7 @@
 
 ### **What is TableauAzureADSync?**
 
-TableauAzureADSync is a script built in PowerShell that syncronizes users from Azure Acrive Directory (AAD) to Tableau Server. 
+TableauAzureADSync is a script built in PowerShell that syncronizes users from Azure Active Directory (AAD) to Tableau Server. 
 
 ### **Script Description**
 The script uses that [Tableau REST AP](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api.htm) and the [Microsoft Graph API](https://docs.microsoft.com/en-us/graph/overview) (Built on REST) to syncronize users from Azure AD to Tableau server.
