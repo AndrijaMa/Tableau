@@ -20,7 +20,7 @@ For the script to work you have to:
 
 The script that is in the repository [link](https://github.com/AndrijaMa/Tableau/blob/master/AdSync/sync_users_from_aad_group_pak_v2.ps1) covers a scenario where you have one Tableau site and want to add users that are members of an Azure Active Directory Security group to a Tableau Server that is installed on prem  or in a private cloud.
 
-Download the [script](https://github.com/AndrijaMa/Tableau/blob/master/AdSync/sync_users_from_aad_group_pak_v2.ps1) and add the information that you collected previously.
+Download the [script](https://github.com/AndrijaMa/Tableau/blob/master/AdSync/sync_users_from_aad_group_pak_v2.ps1) sync_users_from_aad_group_pak_v2.ps1 and add the information that you collected previously to the top of the script.
 
 ```powershell
 #Azure AD information
