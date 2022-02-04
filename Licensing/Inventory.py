@@ -9,113 +9,78 @@ name = "" #Personal Access Token Name (https://help.tableau.com/current/server/e
 token = "" #Personal Access Token key
 #****************************************************************************************************************
 #****************************************************************************************************************
-df_site = pd.DataFrame(columns=['SiteID','SiteName','SiteCuntentUrl'])
-df_user = pd.DataFrame(columns=['SiteName''SiteID','UseName','UserRole'])
 
-if base_url[-1] == '/':
-      base_url = base_url[:-1]
-else:
-  base_url
-
-url = base_url+"/api/"+api_version+"/auth/signin"
-
+#Authenticate and save auth token
+auth_url = base_url+"/api/"+api_version+"/auth/signin"
 payload = '<tsRequest>\n\t<credentials\n\t  personalAccessTokenName=\"'+name+'\" personalAccessTokenSecret=\"'+token+'\" >\n  \t\t<site contentUrl=\"\" />\n\t</credentials>\n</tsRequest>'
 headers = {'Content-Type': 'text/xml'}
+token = (bs((requests.request("POST", auth_url, headers=headers, data=payload)).text)).credentials['token']
 
-response = requests.request("POST", url, headers=headers, data=payload)
-soup = bs(response.text)
-token = soup.credentials['token']
-
-#list all sites
+#List all sites and write them to a dataframe
 url = base_url+"/api/"+api_version+"/sites/"
+
+#Swithch between sites
+switchUrl = base_url+"/api/"+api_version+"/auth/switchSite"
+
 headers = {'x-tableau-auth': token,'Content-Type': 'application/xml'}
-s = requests.request("GET", url, headers=headers)
-sites = bs(s.text)
+sites =  bs((requests.request("GET", url, headers=headers)).text)
 
-if int(sites.pagination['totalavailable']) <= 100:
-  sitePageCount = 1
-else:
- sitePageCount = int(str(round(int(sites.pagination['totalavailable'])/100,0)).split(".", 1)[0])
+#Check how many loops will be executed
+sites_count = int(sites.pagination['totalavailable'])
+site_page_count = math.ceil(int(sites.pagination['totalavailable'])/100)
+sitePageCount = 1 if sites_count <= 100 else site_page_count
+
 x=1
-
 while x <= sitePageCount:
   #print(x)
-  url = base_url+"/api/"+api_version+"/sites?pageSize=100&pageNumber="+str(x)
-  x = x+1
-  s = requests.request("GET", url, headers=headers)
-  sites = bs(s.text)
+  url_sites = base_url+"/api/"+api_version+"/sites?pageSize=100&pageNumber="+str(x)
+  x = x +1
+  sites = bs(requests.request("GET", url_sites, headers=headers).text)
 
   for site in sites.sites:
 
-    SiteName = site['name']
-    SiteID = site['id']
-    SiteContentUrl = site['contenturl']
-
-    df_site = df_site.append({
-                    'SiteName' : SiteName,
-                    'SiteID' : SiteID,
-                    'SiteContentUrl' : SiteContentUrl
-
-                  }, ignore_index=True,)
-
-switchUrl = base_url+"/api/"+api_version+"/auth/switchSite"
-
-
-for index, site in df_site.iterrows():
-  
-  contentUrl = site['SiteContentUrl']
-  siteName = site['SiteName']
-  siteID = site['SiteID'] 
-  #print(contentUrl)
-  headersx = {'x-tableau-auth': token, 'Content-Type': 'application/xml'}
-  #print(headersx)
-  payloadx = "<tsRequest>\t\n  \t\t<site contentUrl=\""+contentUrl+"\" />\n</tsRequest>"
-  #print("Payload: "+payloadx)
-  responsex = requests.request("POST", switchUrl, data=payloadx,headers=headersx)
-  soupx = bs(responsex.text)
-  #print(soupx)
-  token = soupx.credentials['token']
-  #print("Site token: "+token)
-
-  payloadA=""
-  headersx = {'x-tableau-auth': token, 'Content-Type': 'application/xml'}
-  final_url = base_url+"/api/"+api_version+"/sites/"+siteID+"/users"
-  #print(final_url)
-  u = requests.request("GET", final_url, headers=headersx,data=payloadA)
-  users = bs(u.text)
-  #print(users)
-  totalavailable = int(users.pagination['totalavailable'])
-  #print("totalavailable: " + str(totalavailable))
-
-  if totalavailable <= 100:
-    userPageCount = 1
-  else:
-    userPageCount = math.ceil(totalavailable/100)
-  uc=1
-  #print(userPageCount)
-  
-  while uc <= userPageCount:  
-    #print("TotalPageCount: "+ str(userPageCount) +  " Current page: "+str(uc))
-    users_url = base_url+"/api/"+api_version+"/sites/"+siteID+"/users?pageSize=100&pageNumber="+str(uc)
-    uc=uc+1
+    #Authenticate to new site in the loop
+    contentUrl = site['contenturl']
+    siteName = site['name']
+    siteID = site['id'] 
+    #print(contentUrl)
     
-    #print(users_url)
-    ud = requests.request("GET", users_url, headers=headersx,data=payloadA)
-    userdata = bs(ud.text)
+    headers = {'x-tableau-auth': token, 'Content-Type': 'application/xml'}
+    #print(headersx)
+    payload = "<tsRequest>\t\n  \t\t<site contentUrl=\""+contentUrl+"\" />\n</tsRequest>"
+    #print("Payload: "+payloadx)
+    token = (bs(requests.request("POST", switchUrl, data=payload,headers=headers).text)).credentials['token']
+
+    payload=""
+    headers = {'x-tableau-auth': token, 'Content-Type': 'application/xml'}
+    url_users = base_url+"/api/"+api_version+"/sites/"+siteID+"/users"
+    #print(final_url)
+    users = bs(requests.request("GET", url_users, headers=headers,data=payload).text)
     
-    for user in userdata.users:
-
-        userName = user['name']
-        userRole = user['siterole']
-        #print("Site: " + siteName + " User: "+ userName)  
-        df_user = df_user.append({
-                    'SiteID' : siteID,
-                    'SiteName' : contentUrl,
-                    'UserName' : userName,
-                    'UserRole' : userRole
-
-                  }, ignore_index=True,)  
+    #print(users)
+    #Check how many loops will be executed
+    user_count = int(users.pagination['totalavailable'])
+    user_page_count = math.ceil(int(users.pagination['totalavailable'])/100)
+    userPageCount = 1 if user_count <= 100 else user_page_count
+    
+    uc=1
+    while uc <= user_page_count:  
+      #print("TotalPageCount: "+ str(userPageCount) +  " Current page: "+str(uc))
+      users_url = base_url+"/api/"+api_version+"/sites/"+siteID+"/users?pageSize=100&pageNumber="+str(uc)
+      uc = uc + 1
       
+      #print(users_url)
+      userdata = bs(requests.request("GET", users_url, headers=headers,data=payload).text)
+      
+      for user in userdata.users:
+        print(user)
+        df_user = df_user.append({
+                      'SiteID' : site['id'],
+                      'SiteName' : site['contenturl'],
+                      'UserName' : user['name'],
+                      'UserRole' : user['siterole'],
+                      'LastLogin' : user['lastlogin']
+                    }, ignore_index=True,)      
 df_user['UserRole'] = df_user['UserRole'].replace(['ServerAdministrator'],'Creator')
 df_user['UserRole'] = df_user['UserRole'].replace(['SiteAdministratorCreator'],'Creator')
 df_user['UserRole'] = df_user['UserRole'].replace(['ExplorerCanPublish'],'Explorer')
