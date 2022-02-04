@@ -9,6 +9,7 @@ name = "" #Personal Access Token Name (https://help.tableau.com/current/server/e
 token = "" #Personal Access Token key
 #****************************************************************************************************************
 #****************************************************************************************************************
+df_user = pd.DataFrame(columns=['SiteName''SiteID','UseName','UserRole'])
 
 #Authenticate and save auth token
 auth_url = base_url+"/api/"+api_version+"/auth/signin"
@@ -78,9 +79,9 @@ while x <= sitePageCount:
                       'SiteID' : site['id'],
                       'SiteName' : site['contenturl'],
                       'UserName' : user['name'],
-                      'UserRole' : user['siterole'],
-                      'LastLogin' : user['lastlogin']
-                    }, ignore_index=True,)      
+                      'UserRole' : user['siterole']
+                    }, ignore_index=True,)
+        
 df_user['UserRole'] = df_user['UserRole'].replace(['ServerAdministrator'],'Creator')
 df_user['UserRole'] = df_user['UserRole'].replace(['SiteAdministratorCreator'],'Creator')
 df_user['UserRole'] = df_user['UserRole'].replace(['ExplorerCanPublish'],'Explorer')
