@@ -43,6 +43,7 @@ while x <= sitePageCount:
     contentUrl = site['contenturl']
     siteName = site['name']
     siteID = site['id'] 
+    print("Processing site "+ siteName)
     
     headers = {'x-tableau-auth': token, 'Content-Type': 'application/xml'}
     payload = "<tsRequest>\t\n  \t\t<site contentUrl=\""+contentUrl+"\" />\n</tsRequest>"
