@@ -33,7 +33,6 @@ sitePageCount = 1 if sites_count <= 100 else site_page_count
 
 x=1
 while x <= sitePageCount:
-  #print(x)
   url_sites = base_url+"/api/"+api_version+"/sites?pageSize=100&pageNumber="+str(x)
   x = x +1
   sites = bs(requests.request("GET", url_sites, headers=headers).text)
@@ -44,21 +43,16 @@ while x <= sitePageCount:
     contentUrl = site['contenturl']
     siteName = site['name']
     siteID = site['id'] 
-    #print(contentUrl)
     
     headers = {'x-tableau-auth': token, 'Content-Type': 'application/xml'}
-    #print(headersx)
     payload = "<tsRequest>\t\n  \t\t<site contentUrl=\""+contentUrl+"\" />\n</tsRequest>"
-    #print("Payload: "+payloadx)
     token = (bs(requests.request("POST", switchUrl, data=payload,headers=headers).text)).credentials['token']
 
     payload=""
     headers = {'x-tableau-auth': token, 'Content-Type': 'application/xml'}
     url_users = base_url+"/api/"+api_version+"/sites/"+siteID+"/users"
-    #print(final_url)
     users = bs(requests.request("GET", url_users, headers=headers,data=payload).text)
     
-    #print(users)
     #Check how many loops will be executed
     user_count = int(users.pagination['totalavailable'])
     user_page_count = math.ceil(int(users.pagination['totalavailable'])/100)
@@ -66,15 +60,12 @@ while x <= sitePageCount:
     
     uc=1
     while uc <= user_page_count:  
-      #print("TotalPageCount: "+ str(userPageCount) +  " Current page: "+str(uc))
       users_url = base_url+"/api/"+api_version+"/sites/"+siteID+"/users?pageSize=100&pageNumber="+str(uc)
       uc = uc + 1
       
-      #print(users_url)
       userdata = bs(requests.request("GET", users_url, headers=headers,data=payload).text)
       
       for user in userdata.users:
-        print(user)
         df_user = df_user.append({
                       'SiteID' : site['id'],
                       'SiteName' : site['contenturl'],
