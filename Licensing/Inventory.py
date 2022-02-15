@@ -1,6 +1,6 @@
 ####
-# This script contains functions that demonstrate how to move
-# collect user information from Tableau Server.
+# This script contains functions that demonstrate how to 
+# collect user role information from Tableau Server.
 #
 # To run the script, you must have installed Python 3.x or later, 
 #You will have to have the  'requests',bs4, pandas and math library installed:
@@ -17,13 +17,14 @@ import math
 base_url = '' #Tableau server base url with no trailing slash
 name = "" #Personal Access Token Name (https://help.tableau.com/current/server/en-us/security_personal_access_tokens.htm)
 token = "" #Personal Access Token key
-bs_parser = 'html.parser'
+
 
 #****************************************************************************************************************
 #*****Do not change anything below this line
 #****************************************************************************************************************
-#Function used in the script*************************************************************************************
 api_version = '3.1'
+bs_parser = 'html.parser'
+#Function used in the script*************************************************************************************
 #****************************************************************************************************************
 def apicall(Method,url,payload,headers,):
   result = bs((requests.request(Method, url,data=payload, headers=headers)).text, bs_parser)
