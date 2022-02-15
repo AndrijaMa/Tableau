@@ -24,6 +24,9 @@ token = "" #Personal Access Token key
 #****************************************************************************************************************
 api_version = '3.1'
 bs_parser = 'html.parser'
+#If true remove trailing slash in the base_url 
+base_url = base_url[:-1] if base_url[-1] == '/' else base_url
+
 #Function used in the script*************************************************************************************
 #****************************************************************************************************************
 def apicall(Method,url,payload,headers,):
