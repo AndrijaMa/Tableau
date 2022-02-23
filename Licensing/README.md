@@ -5,7 +5,8 @@ Install the following python packages:
 - requests
 - pandas
 
-pip install bs4, requests, pandas
+To the o install the python packages 
+pip install bs4 requests pandas
 
 Script paramaters:
 
