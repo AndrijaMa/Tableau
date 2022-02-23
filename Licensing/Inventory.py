@@ -93,11 +93,13 @@ while x <= site_pageCount:
     siteName = site['name']
     siteID = site['id'] 
     
-    headers = f_heades(token)
-    #print(headersx)
-    payload = "<tsRequest>\t\n  \t\t<site contentUrl=\""+contentUrl+"\" />\n</tsRequest>"
-    #print("Payload: "+payloadx)
-    token = (apicall('POST', switchUrl, payload, headers)).credentials['token']
+    if contentUrl != '':
+      print("if")
+      headers = f_heades(token)
+      #print(headersx)
+      payload = "<tsRequest>\t\n  \t\t<site contentUrl=\""+contentUrl+"\" />\n</tsRequest>"
+      #print("Payload: "+payloadx)
+      token = (apicall('POST', switchUrl, payload, headers)).credentials['token']
     
     payload=""
     headers = f_heades(token)
