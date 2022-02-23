@@ -18,16 +18,6 @@ base_url = '' #Tableau server base url with no trailing slash
 name = "" #Personal Access Token Name (https://help.tableau.com/current/server/en-us/security_personal_access_tokens.htm)
 token = "" #Personal Access Token key
 
-
-#****************************************************************************************************************
-#*****Do not change anything below this line
-#****************************************************************************************************************
-api_version = '3.1'
-bs_parser = 'html.parser'
-#If true remove trailing slash in the base_url 
-base_url = base_url[:-1] if base_url[-1] == '/' else base_url
-
-#Function used in the script*************************************************************************************
 #****************************************************************************************************************
 def apicall(Method,url,payload,headers,):
   result = bs((requests.request(Method, url,data=payload, headers=headers)).text, bs_parser)
@@ -45,6 +35,8 @@ def page_count(list):
 #****************************************************************************************************************
 df_user = pd.DataFrame(columns=['SiteName''SiteID','UseName','UserRole'])
 #****************************************************************************************************************
+#Remove trailing slash in the url 
+base_url = base_url[:-1] if base_url[-1] == '/' else base_url
 
 #Authenticate and save auth token
 #Tableau authentication url
@@ -137,11 +129,9 @@ while x <= site_pageCount:
                       'UserName' : user['name'],
                       'UserRole' : user['siterole']
                     }, ignore_index=True,)
-    
-df_user['UserRole'] = df_user['UserRole'].replace(['ServerAdministrator'],'Creator')
-df_user['UserRole'] = df_user['UserRole'].replace(['SiteAdministratorCreator'],'Creator')
-df_user['UserRole'] = df_user['UserRole'].replace(['ExplorerCanPublish'],'Explorer')
-df_user['UserRole'] = df_user['UserRole'].replace(['SiteAdministratorExplorer'],'Explorer')
+
+df_user['UserRole'] = df_user['UserRole'].replace(dict.fromkeys(['ServerAdministrator','SiteAdministratorCreator'],'Creator'))
+df_user['UserRole'] = df_user['UserRole'].replace(dict.fromkeys(['ExplorerCanPublish','SiteAdministratorExplorer'],'Explorer'))
 df_user.drop( df_user[ df_user['UserRole'] == 'Unlicensed' ].index , inplace=True)
 
 user_list = df_user.sort_values('UserRole').drop_duplicates(subset=['UserName'])
